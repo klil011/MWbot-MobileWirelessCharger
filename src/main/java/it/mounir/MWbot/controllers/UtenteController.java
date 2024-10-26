@@ -18,12 +18,12 @@ public class UtenteController {
         this.utenteService = utenteService;
     }
 
-    @PostMapping("/utente")
+    @PostMapping("/user")
     public Utente createUser(@RequestBody Utente utente) {
         return utenteService.createOrUpdateAccount(utente);
     }
 
-    @GetMapping("/utenti")
+    @GetMapping("/users")
     public Iterable<Utente> getAllUsers() {
         return utenteService.getAllUsers();
     }
