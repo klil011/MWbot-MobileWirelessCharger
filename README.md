@@ -3,6 +3,8 @@
 **MWbot** è un'applicazione **Spring Boot** progettata per gestire un sistema di parcheggio smart dotato di ricaricatori wireless mobili per veicoli elettrici. 
 Il sistema permette agli utenti di parcheggiare i veicoli e richiedere la ricarica tramite MWbot, gestendo prenotazioni e pagamenti. 
 
+##
+
 ## Tecnologie Utilizzate
 - **Linguaggio**: Java
 - **Framework**: Spring Boot
