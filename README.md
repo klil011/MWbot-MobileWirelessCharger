@@ -1,4 +1,4 @@
-# MWbot - Sistema di Gestione Parcheggio con Ricaricatori Wireless Mobili
+# MWbot - Sistema di Gestione Parcheggio con Ricaricatori Wireless Mobili (on going)
 
 ## Descrizione del Progetto
 **MWbot** è un'applicazione **Spring Boot** progettata per gestire un sistema di parcheggio smart dotato di ricaricatori wireless mobili per veicoli elettrici. 
