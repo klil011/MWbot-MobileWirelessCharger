@@ -8,4 +8,4 @@ Il sistema permette agli utenti di parcheggiare i veicoli e richiedere la ricari
 - **Framework**: Spring Boot
 - **Notifiche**: MQTT per la cordinazione tra i sensori dei parcheggi, MWbot e Backend
 - **Persistenza**: Database PostgreSQL
-- **Testing**: Postman, MQTTX
+- **Testing**: Postman e MQTTX
