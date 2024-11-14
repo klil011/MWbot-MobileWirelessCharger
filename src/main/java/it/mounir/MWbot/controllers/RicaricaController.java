@@ -17,8 +17,10 @@ public class RicaricaController {
 
     @PostMapping("/ricarica")
     public String richiestaRicarica(@RequestBody RichiestaRicarica richiestaRicarica) {
-        ricaricaService.richiestaRicarica(richiestaRicarica.getVeicoloId(), richiestaRicarica.getRiceviMessaggio());
-        System.out.println(richiestaRicarica.getRiceviMessaggio());
+        ricaricaService.richiestaRicarica(richiestaRicarica.getVeicoloId(), richiestaRicarica.getRiceviMessaggio(),
+                richiestaRicarica.getPercentualeIniziale(), richiestaRicarica.getPercentualeDesiderata());
+
+        //System.out.println(richiestaRicarica.getRiceviMessaggio());
         return "Richiesta di ricarica ricevuta per veicolo " + richiestaRicarica.getVeicoloId();
     }
 }

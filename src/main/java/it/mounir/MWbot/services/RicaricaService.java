@@ -25,7 +25,8 @@ public class RicaricaService {
         this.codaRicaricaService = codaRicaricaService;
     }
 
-    public void richiestaRicarica(String veicoloId, Boolean riceviMessaggio) {
+    public void richiestaRicarica(String veicoloId, Boolean riceviMessaggio,
+                                  int percentualeIniziale, int percentualeDesiderata) {
         /*stazione di ricarica*/
         String stazioneLibera  = parcheggioService.getPrimoPostoLibero();
 
