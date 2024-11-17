@@ -1,5 +1,6 @@
 package it.mounir.MWbot.services;
 
+import it.mounir.MWbot.DTO.RichiestaSosta;
 import it.mounir.MWbot.domain.RichiestaVeicolo;
 import it.mounir.MWbot.domain.TipoServizio;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +18,13 @@ public class SostaService {
         this.codaSostaService = codaSostaService;
     }
 
-    public void richiestaSosta(String veicoloId) {
+    public void richiestaSosta(RichiestaSosta richiestaSosta) {
         String postoLibero = parcheggioService.getPrimoPostoLibero();
         if (postoLibero != null) {
             parcheggioService.occupaPosto(postoLibero, false);
-            System.out.println("Veicolo " + veicoloId + " ha occupato il posto " + postoLibero + ".");
+            System.out.println("Veicolo " + richiestaSosta.getVeicoloId() + " ha occupato il posto " + postoLibero + ".");
         } else {
-            codaSostaService.aggiungiInCoda(veicoloId, false, TipoServizio.SOSTA);
+            codaSostaService.aggiungiInCoda(richiestaSosta.getVeicoloId(), false, TipoServizio.SOSTA);
         }
     }
 

@@ -17,7 +17,7 @@ public class SostaController {
 
     @PostMapping("/sosta")
     public String richiestaSosta(@RequestBody RichiestaSosta richiestaSosta) {
-        sostaService.richiestaSosta(richiestaSosta.getVeicoloId());
+        sostaService.richiestaSosta(richiestaSosta);
         return "Richiesta di sosta ricevuta per veicolo " + richiestaSosta.getVeicoloId();
     }
 }

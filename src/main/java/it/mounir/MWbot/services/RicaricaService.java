@@ -1,5 +1,6 @@
 package it.mounir.MWbot.services;
 
+import it.mounir.MWbot.DTO.RichiestaRicarica;
 import it.mounir.MWbot.domain.RichiestaVeicolo;
 import it.mounir.MWbot.domain.TipoServizio;
 import it.mounir.MWbot.model.Ricarica;
@@ -25,17 +26,16 @@ public class RicaricaService {
         this.codaRicaricaService = codaRicaricaService;
     }
 
-    public void richiestaRicarica(String veicoloId, Boolean riceviMessaggio,
-                                  int percentualeIniziale, int percentualeDesiderata) {
+    public void richiestaRicarica(RichiestaRicarica richiestaRicarica) {
         /*stazione di ricarica*/
         String stazioneLibera  = parcheggioService.getPrimoPostoLibero();
 
         if (stazioneLibera != null) {
 
-            parcheggioService.occupaPosto(stazioneLibera, riceviMessaggio);
-            System.out.println("Veicolo " + veicoloId + " ha occupato la stazione di ricarica " + stazioneLibera + ".");
+            parcheggioService.occupaPosto(stazioneLibera, richiestaRicarica.getRiceviMessaggio());
+            System.out.println("Veicolo " + richiestaRicarica.getVeicoloId() + " ha occupato la stazione di ricarica " + stazioneLibera + ".");
         } else {
-            codaRicaricaService.aggiungiInCoda(veicoloId, riceviMessaggio, TipoServizio.RICARICA);
+            codaRicaricaService.aggiungiInCoda(richiestaRicarica.getVeicoloId(), richiestaRicarica.getRiceviMessaggio(), TipoServizio.RICARICA);
         }
     }
 
