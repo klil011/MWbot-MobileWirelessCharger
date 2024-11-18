@@ -20,8 +20,8 @@ public class CodaService {
         this.parcheggioService = parcheggioService;
     }
 
-    public void aggiungiInCoda(String veicoloId, Boolean riceviMessaggio, TipoServizio tipoServizio) {
-        RichiestaVeicolo richiesta = new RichiestaVeicolo(veicoloId, riceviMessaggio, tipoServizio);
+    public void aggiungiInCoda(int idUtente, String veicoloId, Boolean riceviMessaggio, TipoServizio tipoServizio) {
+        RichiestaVeicolo richiesta = new RichiestaVeicolo(idUtente, veicoloId, riceviMessaggio, tipoServizio);
         codaRichieste.add(richiesta);
 
         System.out.println("Veicolo " + veicoloId + " è stato messo in coda.");

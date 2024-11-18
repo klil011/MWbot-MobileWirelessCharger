@@ -24,7 +24,7 @@ public class SostaService {
             parcheggioService.occupaPosto(postoLibero, false);
             System.out.println("Veicolo " + richiestaSosta.getVeicoloId() + " ha occupato il posto " + postoLibero + ".");
         } else {
-            codaSostaService.aggiungiInCoda(richiestaSosta.getVeicoloId(), false, TipoServizio.SOSTA);
+            codaSostaService.aggiungiInCoda(richiestaSosta.getIdUtente(), richiestaSosta.getVeicoloId(), false, TipoServizio.SOSTA);
         }
     }
 

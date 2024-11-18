@@ -2,13 +2,13 @@ package it.mounir.MWbot.domain;
 
 public class RichiestaVeicolo {
 
-    //private final String idUtente;
+    private final int idUtente;
     private final String veicoloId;
     private final boolean preferenzaMessaggio;
     private final Enum<TipoServizio> tipoServizio; // "RICARICA" o "SOSTA"
 
-    public RichiestaVeicolo(/*String idUtente,*/ String veicoloId, boolean preferenzaMessaggio, Enum<TipoServizio> tipoServizio) {
-        //this.idUtente = idUtente;
+    public RichiestaVeicolo(int idUtente, String veicoloId, boolean preferenzaMessaggio, Enum<TipoServizio> tipoServizio) {
+        this.idUtente = idUtente;
         this.veicoloId = veicoloId;
         this.preferenzaMessaggio = preferenzaMessaggio;
         this.tipoServizio = tipoServizio;

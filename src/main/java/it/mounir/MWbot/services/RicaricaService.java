@@ -35,7 +35,7 @@ public class RicaricaService {
             parcheggioService.occupaPosto(stazioneLibera, richiestaRicarica.getRiceviMessaggio());
             System.out.println("Veicolo " + richiestaRicarica.getVeicoloId() + " ha occupato la stazione di ricarica " + stazioneLibera + ".");
         } else {
-            codaRicaricaService.aggiungiInCoda(richiestaRicarica.getVeicoloId(), richiestaRicarica.getRiceviMessaggio(), TipoServizio.RICARICA);
+            codaRicaricaService.aggiungiInCoda(richiestaRicarica.getIdUtente(), richiestaRicarica.getVeicoloId(), richiestaRicarica.getRiceviMessaggio(), TipoServizio.RICARICA);
         }
     }
 
