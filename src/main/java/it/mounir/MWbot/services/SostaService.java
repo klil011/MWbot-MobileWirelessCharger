@@ -38,8 +38,9 @@ public class SostaService {
                 System.err.println("Errore durante l'interazione con il DB: " + e.getMessage());
                 throw new RuntimeException("Non è stato possibile completare la richiesta di sosta", e);
             }
-            
+
             System.out.println("Veicolo " + richiestaSosta.getVeicoloId() + " ha occupato il posto " + postoLibero + ".");
+
         } else {
             codaSostaService.aggiungiInCoda(richiestaSosta.getIdUtente(), richiestaSosta.getVeicoloId(), false, TipoServizio.SOSTA);
         }

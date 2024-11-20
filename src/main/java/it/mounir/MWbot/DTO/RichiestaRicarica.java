@@ -1,27 +1,9 @@
 package it.mounir.MWbot.DTO;
 
-public class RichiestaRicarica {
-    private int idUtente;
-    private String veicoloId;
+public class RichiestaRicarica extends Richiesta{
     private Boolean riceviMessaggio;
     private int percentualeIniziale;
     private int percentualeDesiderata;
-
-    public int getIdUtente() {
-        return idUtente;
-    }
-
-    public void setIdUtente(int idUtente) {
-        this.idUtente = idUtente;
-    }
-
-    public String getVeicoloId() {
-        return veicoloId;
-    }
-
-    public void setVeicoloId(String veicoloId) {
-        this.veicoloId = veicoloId;
-    }
 
     public Boolean getRiceviMessaggio() {
         return riceviMessaggio;
