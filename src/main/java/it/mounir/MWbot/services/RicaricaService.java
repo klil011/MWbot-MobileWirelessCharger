@@ -1,7 +1,6 @@
 package it.mounir.MWbot.services;
 
 import it.mounir.MWbot.DTO.RichiestaRicarica;
-import it.mounir.MWbot.domain.RichiestaVeicolo;
 import it.mounir.MWbot.domain.TipoServizio;
 import it.mounir.MWbot.model.Ricarica;
 import it.mounir.MWbot.mqtt.MqttPublisher;

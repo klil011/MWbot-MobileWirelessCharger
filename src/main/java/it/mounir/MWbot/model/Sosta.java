@@ -1,11 +1,13 @@
 package it.mounir.MWbot.model;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table("sosta")
 public class Sosta {
 
+    @Id
     @Column("id_sosta")
     private int idSosta;
 
@@ -13,13 +15,16 @@ public class Sosta {
     private int idUtente;
 
     @Column("id_veicolo")
-    private int idVeicolo;
+    private String idVeicolo;
 
-    public int getIdVeicolo() {
+    @Column("tempo_sosta")
+    private int tempoSosta;
+
+    public String getIdVeicolo() {
         return idVeicolo;
     }
 
-    public void setIdVeicolo(int idVeicolo) {
+    public void setIdVeicolo(String idVeicolo) {
         this.idVeicolo = idVeicolo;
     }
 
@@ -37,5 +42,13 @@ public class Sosta {
 
     public void setIdSosta(int idSosta) {
         this.idSosta = idSosta;
+    }
+
+    public int getTempoSosta() {
+        return tempoSosta;
+    }
+
+    public void setTempoSosta(int tempoSosta) {
+        this.tempoSosta = tempoSosta;
     }
 }
