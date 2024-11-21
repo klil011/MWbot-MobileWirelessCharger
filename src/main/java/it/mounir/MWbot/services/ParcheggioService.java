@@ -1,9 +1,6 @@
 package it.mounir.MWbot.services;
 
-import it.mounir.MWbot.mqtt.MqttSubscriber;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 
@@ -11,10 +8,6 @@ import java.util.*;
 
 @Service
 public class ParcheggioService {
-
-    @Lazy
-    @Autowired
-    private MqttSubscriber mqttSubscriber;
 
     private final Set<String> postiLiberi;
     private final Map<String, Long> tempoPostiOccupati;
@@ -33,26 +26,11 @@ public class ParcheggioService {
 
     public boolean occupaPosto(String postoId, Boolean riceviMessaggio) {
         if (postiLiberi.remove(postoId)) {
-
-            /*  Se la procedura viene invocata a seguito di una
-            richiesta di sosta non viene inoltrata nessun notifica  */
-            if(riceviMessaggio == null)
-                riceviMessaggio = false;
-
-            if (riceviMessaggio) {
-                try {
-                    String topic = "Parcheggio/Messaggio/Posto/" + postoId;
-                    mqttSubscriber.subscribeToTopic(topic);  // Iscrizione dinamica al topic
-                } catch (MqttException e) {
-                    e.printStackTrace();
-                    System.out.println("Errore durante l'iscrizione al topic per posto " + postoId);
-                }
-            }
-
             tempoPostiOccupati.put(postoId, System.currentTimeMillis());
             System.out.println("Posto " + postoId + " è ora occupato.");
             return true;
         }
+
         System.out.println("Posto " + postoId + " non è disponibile.");
         return false;
     }

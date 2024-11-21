@@ -6,7 +6,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.UUID;
 
 @Configuration
 public class MqttConfig {
@@ -20,7 +19,8 @@ public class MqttConfig {
         MqttConnectOptions options = new MqttConnectOptions();
         options.setAutomaticReconnect(true);
         options.setCleanSession(true);
-        options.setConnectionTimeout(10);
+        options.setConnectionTimeout(30);
+        options.setKeepAliveInterval(30);
         client.connect(options);
         return client;
     }

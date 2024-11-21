@@ -1,11 +1,7 @@
 package it.mounir.MWbot.mqtt;
 
-import it.mounir.MWbot.domain.RichiestaVeicolo;
-import it.mounir.MWbot.domain.TipoServizio;
 import it.mounir.MWbot.services.CodaService;
 import it.mounir.MWbot.services.ParcheggioService;
-import it.mounir.MWbot.services.RicaricaService;
-import it.mounir.MWbot.services.SostaService;
 import jakarta.annotation.PostConstruct;
 import org.eclipse.paho.client.mqttv3.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,20 +25,15 @@ public class MqttSubscriber implements MqttCallback {
     public void subscribe() throws MqttException {
         mqttClient.setCallback(this);
         mqttClient.subscribe("Parcheggio/Posto/#");
+        mqttClient.subscribe("Parcheggio/Messaggio/Posto/#");
         mqttClient.subscribe("Mwbot/Posto/#");
-    }
-
-    /*  metodo per iscriversi dinamicamente al topic */
-    public void subscribeToTopic(String topic) throws MqttException {
-        mqttClient.subscribe(topic);
-        System.out.println("Iscritto dinamicamente al topic: " + topic);
     }
 
     @Override
     public void connectionLost(Throwable cause) {
         System.out.println("Connection lost: " + cause.getMessage());
+        cause.printStackTrace();
     }
-
 
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {

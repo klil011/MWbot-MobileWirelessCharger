@@ -28,13 +28,15 @@ public class RicaricaService {
     public void richiestaRicarica(RichiestaRicarica richiestaRicarica) {
         /*stazione di ricarica*/
         String stazioneLibera  = parcheggioService.getPrimoPostoLibero();
+        richiestaRicarica.setTipoServizio(TipoServizio.RICARICA);
 
         if (stazioneLibera != null) {
 
             parcheggioService.occupaPosto(stazioneLibera, richiestaRicarica.getRiceviMessaggio());
             System.out.println("Veicolo " + richiestaRicarica.getVeicoloId() + " ha occupato la stazione di ricarica " + stazioneLibera + ".");
         } else {
-            codaRicaricaService.aggiungiInCoda(richiestaRicarica.getIdUtente(), richiestaRicarica.getVeicoloId(), richiestaRicarica.getRiceviMessaggio(), TipoServizio.RICARICA);
+            richiestaRicarica.setTipoServizio(TipoServizio.RICARICA);
+            codaRicaricaService.aggiungiInCoda(richiestaRicarica);
         }
     }
 

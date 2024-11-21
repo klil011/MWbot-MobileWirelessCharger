@@ -1,6 +1,7 @@
 package it.mounir.MWbot.services;
 
-import it.mounir.MWbot.domain.RichiestaVeicolo;
+import it.mounir.MWbot.DTO.Richiesta;
+import it.mounir.MWbot.DTO.RichiestaRicarica;
 import it.mounir.MWbot.domain.TipoServizio;
 import org.springframework.stereotype.Service;
 
@@ -11,28 +12,35 @@ import java.util.Queue;
 public class CodaService {
 
     private final ParcheggioService parcheggioService;
-    private final Queue<RichiestaVeicolo> codaRichieste = new LinkedList<>();
+    private final Queue<Richiesta> codaRichieste = new LinkedList<>();
 
     public CodaService(ParcheggioService parcheggioService) {
         this.parcheggioService = parcheggioService;
     }
 
-    public void aggiungiInCoda(int idUtente, String veicoloId, Boolean riceviMessaggio, TipoServizio tipoServizio) {
-        RichiestaVeicolo richiesta = new RichiestaVeicolo(idUtente, veicoloId, riceviMessaggio, tipoServizio);
+    public void aggiungiInCoda(Richiesta richiesta) {
         codaRichieste.add(richiesta);
 
-        System.out.println("Veicolo " + veicoloId + " è stato messo in coda.");
+        System.out.println("Veicolo " + richiesta.getVeicoloId() + " è stato messo in coda.");
     }
 
-    public RichiestaVeicolo rimuoviDallaCoda() {
+    public Richiesta rimuoviDallaCoda() {
         return codaRichieste.poll();
     }
 
     public void gestisciCoda (String postoLiberoId) {
         if(this.codaNonVuota()) {
 
-            RichiestaVeicolo richiestaVeicolo = this.rimuoviDallaCoda();
-            parcheggioService.occupaPosto(postoLiberoId, richiestaVeicolo.isPreferenzaMessaggio());
+            Richiesta richiestaVeicolo = this.rimuoviDallaCoda();
+            System.out.println(richiestaVeicolo.toString());
+
+            if(richiestaVeicolo instanceof RichiestaRicarica) {
+                parcheggioService.occupaPosto(postoLiberoId, ((RichiestaRicarica) richiestaVeicolo).getRiceviMessaggio());
+            }
+            else {
+                parcheggioService.occupaPosto(postoLiberoId, false);
+            }
+
 
             if(richiestaVeicolo.getTipoServizio().equals(TipoServizio.RICARICA)) {
                 System.out.println("Veicolo " + richiestaVeicolo.getVeicoloId() + " ha occupato la stazione di ricarica "

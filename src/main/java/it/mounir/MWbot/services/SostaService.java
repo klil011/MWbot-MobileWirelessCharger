@@ -23,6 +23,8 @@ public class SostaService {
 
     public void richiestaSosta(RichiestaSosta richiestaSosta) {
         String postoLibero = parcheggioService.getPrimoPostoLibero();
+        richiestaSosta.setTipoServizio(TipoServizio.SOSTA);
+        
         if (postoLibero != null) {
             parcheggioService.occupaPosto(postoLibero, false);
 
@@ -42,7 +44,8 @@ public class SostaService {
             System.out.println("Veicolo " + richiestaSosta.getVeicoloId() + " ha occupato il posto " + postoLibero + ".");
 
         } else {
-            codaSostaService.aggiungiInCoda(richiestaSosta.getIdUtente(), richiestaSosta.getVeicoloId(), false, TipoServizio.SOSTA);
+
+            codaSostaService.aggiungiInCoda(richiestaSosta);
         }
     }
 

@@ -31,4 +31,12 @@ public abstract class Richiesta {
     public void setTipoServizio(TipoServizio tipoServizio) {
         this.tipoServizio = tipoServizio;
     }
+
+    @Override
+    public String toString(){
+        return ("idUtente: " + this.getIdUtente() +"\n"+
+                "veicoloId: " + this.getVeicoloId() +"\n"+
+                "servizio: " + this.getTipoServizio());
+
+    }
 }
