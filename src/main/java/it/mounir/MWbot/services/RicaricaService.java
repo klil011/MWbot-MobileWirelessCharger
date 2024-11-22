@@ -33,30 +33,42 @@ public class RicaricaService {
         String stazioneLibera  = parcheggioService.getPrimoPostoLibero();
         richiestaRicarica.setTipoServizio(TipoServizio.RICARICA);
 
-        if (stazioneLibera != null) {
+        Ricarica ricarica = this.creaOggettoRicarica(richiestaRicarica);
 
+        if (stazioneLibera != null) {
             parcheggioService.occupaPosto(stazioneLibera, richiestaRicarica.getRiceviMessaggio());
 
-            try{
-                Ricarica ricarica = new Ricarica();
-                ricarica.setIdMwbot(1);  /* per semplicità si suppone che ci sia un solo MWbot */
-                ricarica.setIdPrenotazione(null); /* per il momento non ho ancora gestito le prenotazioni */
-                ricarica.setStato(StatoRicarica.CHARGING.ordinal()); /* bisogna creare un ENUM che rappresenti gli stati possibili delle ricariche */
-                ricarica.setIdVeicolo(richiestaRicarica.getVeicoloId());
-                ricarica.setIdUtente(richiestaRicarica.getIdUtente());
-                ricarica.setPercentualeIniziale(richiestaRicarica.getPercentualeIniziale());
-                ricarica.setPercentualeRicaricare(richiestaRicarica.getPercentualeDesiderata());
+            ricarica.setStato(StatoRicarica.CHARGING.ordinal()); /* bisogna creare un ENUM che rappresenti gli stati possibili delle ricariche */
+            this.salvaRichiestaRicarica(ricarica);
 
-                Ricarica ricaricaSalvata = this.createOrUpdateRicarica(ricarica);
-
-            }catch(RuntimeException e){
-                System.err.println("Errore durante l'interazione con il DB: " + e.getMessage());
-                throw new RuntimeException("Non è stato possibile completare la richiesta di ricarica", e);
-            }
             System.out.println("Veicolo " + richiestaRicarica.getVeicoloId() + " ha occupato la stazione di ricarica " + stazioneLibera + ".");
         } else {
-            richiestaRicarica.setTipoServizio(TipoServizio.RICARICA);
+            ricarica.setStato(StatoRicarica.WAITING.ordinal()); /* perchè viene messo in coda di attesa */
+            this.salvaRichiestaRicarica(ricarica);
+            
             codaRicaricaService.aggiungiInCoda(richiestaRicarica);
+        }
+    }
+
+    private Ricarica creaOggettoRicarica(RichiestaRicarica richiestaRicarica) {
+        Ricarica ricarica = new Ricarica();
+        ricarica.setIdMwbot(1);  /* per semplicità si suppone che ci sia un solo MWbot */
+        ricarica.setIdPrenotazione(null); /* per il momento non ho ancora gestito le prenotazioni */
+        ricarica.setIdVeicolo(richiestaRicarica.getVeicoloId());
+        ricarica.setIdUtente(richiestaRicarica.getIdUtente());
+        ricarica.setPercentualeIniziale(richiestaRicarica.getPercentualeIniziale());
+        ricarica.setPercentualeRicaricare(richiestaRicarica.getPercentualeDesiderata());
+
+        return ricarica;
+    }
+
+    private void salvaRichiestaRicarica(Ricarica ricarica) {
+        try{
+            Ricarica ricaricaSalvata = this.createOrUpdateRicarica(ricarica);
+
+        }catch(RuntimeException e){
+            System.err.println("Errore durante l'interazione con il DB: " + e.getMessage());
+            throw new RuntimeException("Non è stato possibile completare la richiesta di ricarica", e);
         }
     }
 
