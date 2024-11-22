@@ -8,13 +8,11 @@ import org.springframework.data.relational.core.mapping.Table;
 public class Parcheggio {
 
     @Id
-    @Column("id_veicolo")
+    @Column("id_parcheggio")
     private int idParcheggio;
 
+    @Column("capacità")
     private int capacita;
-
-    @Column("posti_occupati")
-    private int postiOccupati;
 
     private int costoKw;
 
@@ -32,14 +30,6 @@ public class Parcheggio {
 
     public void setCapacita(int capacita) {
         this.capacita = capacita;
-    }
-
-    public int getPostiOccupati() {
-        return postiOccupati;
-    }
-
-    public void setPostiOccupati(int postiOccupati) {
-        this.postiOccupati = postiOccupati;
     }
 
     public int getCostoKw() {

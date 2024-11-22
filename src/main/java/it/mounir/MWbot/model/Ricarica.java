@@ -12,10 +12,10 @@ public class Ricarica {
     private int idRicarica;
 
     @Column("id_veicolo")
-    private int idVeicolo;
+    private String idVeicolo;
 
     @Column("id_prenotazione")
-    private int idPrenotazione;
+    private Integer idPrenotazione;
 
     @Column("id_utente")
     private int idUtente;
@@ -23,7 +23,11 @@ public class Ricarica {
     @Column("id_mwbot")
     private int idMwbot;
 
+    @Column("percentuale_ricaricare")
     private int percentualeRicaricare;
+
+    @Column("percentuale_iniziale")
+    private int percentualeIniziale;
 
     private int stato;
 
@@ -35,19 +39,19 @@ public class Ricarica {
         this.idRicarica = idRicarica;
     }
 
-    public int getIdPrenotazione() {
+    public Integer getIdPrenotazione() {
         return idPrenotazione;
     }
 
-    public void setIdPrenotazione(int idPrenotazione) {
+    public void setIdPrenotazione(Integer idPrenotazione) {
         this.idPrenotazione = idPrenotazione;
     }
 
-    public int getIdVeicolo() {
+    public String getIdVeicolo() {
         return idVeicolo;
     }
 
-    public void setIdVeicolo(int idVeicolo) {
+    public void setIdVeicolo(String idVeicolo) {
         this.idVeicolo = idVeicolo;
     }
 
@@ -82,4 +86,8 @@ public class Ricarica {
     public void setStato(int stato) {
         this.stato = stato;
     }
+
+    public int getPercentualeIniziale() { return percentualeIniziale; }
+
+    public void setPercentualeIniziale(int percentualeIniziale) { this.percentualeIniziale = percentualeIniziale; }
 }
