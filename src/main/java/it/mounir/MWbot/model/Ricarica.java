@@ -31,6 +31,8 @@ public class Ricarica {
 
     private int stato;
 
+    private Boolean notifica;
+
     public int getIdRicarica() {
         return idRicarica;
     }
@@ -90,4 +92,12 @@ public class Ricarica {
     public int getPercentualeIniziale() { return percentualeIniziale; }
 
     public void setPercentualeIniziale(int percentualeIniziale) { this.percentualeIniziale = percentualeIniziale; }
+
+    public Boolean getNotifica() {
+        return notifica;
+    }
+
+    public void setNotifica(Boolean notifica) {
+        this.notifica = notifica;
+    }
 }

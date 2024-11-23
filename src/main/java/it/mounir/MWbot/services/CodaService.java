@@ -34,12 +34,7 @@ public class CodaService {
             Richiesta richiestaVeicolo = this.rimuoviDallaCoda();
             System.out.println(richiestaVeicolo.toString());
 
-            if(richiestaVeicolo instanceof RichiestaRicarica) {
-                parcheggioService.occupaPosto(postoLiberoId, ((RichiestaRicarica) richiestaVeicolo).getRiceviMessaggio());
-            }
-            else {
-                parcheggioService.occupaPosto(postoLiberoId, false);
-            }
+            parcheggioService.occupaPosto(postoLiberoId, richiestaVeicolo);
 
 
             if(richiestaVeicolo.getTipoServizio().equals(TipoServizio.RICARICA)) {

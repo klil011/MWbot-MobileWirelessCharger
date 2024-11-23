@@ -1,5 +1,8 @@
 package it.mounir.MWbot.services;
 
+import it.mounir.MWbot.DTO.Richiesta;
+import it.mounir.MWbot.domain.StatoRicarica;
+import it.mounir.MWbot.model.Ricarica;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +16,11 @@ public class ParcheggioService {
     private final Map<String, Long> tempoPostiOccupati;
     private final int maxPosti = 5;
 
+    private final RicaricaRepositoryService ricaricaRepositoryService;
+
     @Autowired
-    public ParcheggioService() {
+    public ParcheggioService(RicaricaRepositoryService ricaricaRepositoryService) {
+        this.ricaricaRepositoryService = ricaricaRepositoryService;
 
         this.postiLiberi = new HashSet<>();
         this.tempoPostiOccupati = new HashMap<>();
@@ -24,10 +30,28 @@ public class ParcheggioService {
         }
     }
 
-    public boolean occupaPosto(String postoId, Boolean riceviMessaggio) {
+    public boolean occupaPosto(String postoId, Richiesta richiesta) {
         if (postiLiberi.remove(postoId)) {
             tempoPostiOccupati.put(postoId, System.currentTimeMillis());
             System.out.println("Posto " + postoId + " è ora occupato.");
+
+            /* QUA FACCIO UPDATE NEL DB PER MODIFICARE LO STATO DELLA RICHIESTA
+            *   - con l'ID dell ricarica salvato in richiesta faccio una find e uso quella per modificare la query*/
+
+            /*considera che il metodo viene già usato quando il veicolo non va in coda e per le richieste di tipo sosta */
+            Optional<Ricarica> ricaricaSalvata = ricaricaRepositoryService.getRicaricaById((long)richiesta.getIdRichiesta());
+            if (ricaricaSalvata.isPresent()) {
+                Ricarica ricarica = ricaricaSalvata.get();
+
+                if(ricarica.getStato() == 0) {
+                    ricarica.setStato(StatoRicarica.CHARGING.ordinal());
+                    ricaricaRepositoryService.createOrUpdateRicarica(ricarica);
+                }
+
+            } else {
+                System.out.println("Ricarica non trovata.");
+            }
+
             return true;
         }
 

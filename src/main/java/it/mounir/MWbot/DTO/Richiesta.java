@@ -1,9 +1,11 @@
 package it.mounir.MWbot.DTO;
 
 import it.mounir.MWbot.domain.TipoServizio;
+import it.mounir.MWbot.model.Ricarica;
 
 public abstract class Richiesta {
 
+    private int idRichiesta;
     private int idUtente;
     private String veicoloId;
     private TipoServizio tipoServizio;
@@ -39,4 +41,13 @@ public abstract class Richiesta {
                 "servizio: " + this.getTipoServizio());
 
     }
+
+    public int getIdRichiesta() {
+        return idRichiesta;
+    }
+
+    public void setIdRichiesta(int idRichiesta) {
+        this.idRichiesta = idRichiesta;
+    }
+
 }

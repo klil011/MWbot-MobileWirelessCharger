@@ -16,16 +16,16 @@ import static java.sql.Types.NULL;
 @Service
 public class RicaricaService {
 
-    private final RicaricaRepository ricaricaRepository;
+    private final RicaricaRepositoryService ricaricaRepositoryService;
     private final ParcheggioService parcheggioService;
     private final CodaService codaRicaricaService;
 
     @Autowired
-    public RicaricaService(RicaricaRepository ricaricaRepository, ParcheggioService parcheggioService,
-                           CodaService codaRicaricaService, MqttPublisher mqttPublisher) {
-        this.ricaricaRepository = ricaricaRepository;
+    public RicaricaService(ParcheggioService parcheggioService,
+                           CodaService codaRicaricaService, RicaricaRepositoryService ricaricaRepositoryService) {
         this.parcheggioService = parcheggioService;
         this.codaRicaricaService = codaRicaricaService;
+        this.ricaricaRepositoryService = ricaricaRepositoryService;
     }
 
     public void richiestaRicarica(RichiestaRicarica richiestaRicarica) {
@@ -36,16 +36,19 @@ public class RicaricaService {
         Ricarica ricarica = this.creaOggettoRicarica(richiestaRicarica);
 
         if (stazioneLibera != null) {
-            parcheggioService.occupaPosto(stazioneLibera, richiestaRicarica.getRiceviMessaggio());
 
-            ricarica.setStato(StatoRicarica.CHARGING.ordinal()); /* bisogna creare un ENUM che rappresenti gli stati possibili delle ricariche */
-            this.salvaRichiestaRicarica(ricarica);
+            ricarica.setStato(StatoRicarica.CHARGING.ordinal());
+            Ricarica ricaricaSalvata = this.salvaRichiestaRicarica(ricarica);
+            richiestaRicarica.setIdRichiesta(ricaricaSalvata.getIdRicarica());
+
+            parcheggioService.occupaPosto(stazioneLibera, richiestaRicarica);
 
             System.out.println("Veicolo " + richiestaRicarica.getVeicoloId() + " ha occupato la stazione di ricarica " + stazioneLibera + ".");
         } else {
             ricarica.setStato(StatoRicarica.WAITING.ordinal()); /* perchè viene messo in coda di attesa */
-            this.salvaRichiestaRicarica(ricarica);
-            
+            Ricarica ricaricaSalvata = this.salvaRichiestaRicarica(ricarica);
+            richiestaRicarica.setIdRichiesta(ricaricaSalvata.getIdRicarica());
+
             codaRicaricaService.aggiungiInCoda(richiestaRicarica);
         }
     }
@@ -56,16 +59,17 @@ public class RicaricaService {
         ricarica.setIdPrenotazione(null); /* per il momento non ho ancora gestito le prenotazioni */
         ricarica.setIdVeicolo(richiestaRicarica.getVeicoloId());
         ricarica.setIdUtente(richiestaRicarica.getIdUtente());
+        ricarica.setNotifica(richiestaRicarica.getRiceviMessaggio());
         ricarica.setPercentualeIniziale(richiestaRicarica.getPercentualeIniziale());
         ricarica.setPercentualeRicaricare(richiestaRicarica.getPercentualeDesiderata());
 
         return ricarica;
     }
 
-    private void salvaRichiestaRicarica(Ricarica ricarica) {
+    private Ricarica salvaRichiestaRicarica(Ricarica ricarica) {
         try{
-            Ricarica ricaricaSalvata = this.createOrUpdateRicarica(ricarica);
-
+            Ricarica ricaricaSalvata = ricaricaRepositoryService.createOrUpdateRicarica(ricarica);
+            return ricaricaSalvata;
         }catch(RuntimeException e){
             System.err.println("Errore durante l'interazione con il DB: " + e.getMessage());
             throw new RuntimeException("Non è stato possibile completare la richiesta di ricarica", e);
@@ -77,15 +81,4 @@ public class RicaricaService {
                 ", Veicoli in coda per ricarica: " + codaRicaricaService.getCodaRichiesteCount();
     }
 
-    public Ricarica createOrUpdateRicarica(Ricarica ricarica) {
-        return ricaricaRepository.save(ricarica);
-    }
-
-    public Optional<Ricarica> getRicaricaById(Long id) {
-        return ricaricaRepository.findById(id);
-    }
-
-    public Iterable<Ricarica> getAllRicariche() {
-        return ricaricaRepository.findAll();
-    }
 }

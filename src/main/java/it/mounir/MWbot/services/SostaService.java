@@ -26,7 +26,7 @@ public class SostaService {
         richiestaSosta.setTipoServizio(TipoServizio.SOSTA);
         
         if (postoLibero != null) {
-            parcheggioService.occupaPosto(postoLibero, false);
+            parcheggioService.occupaPosto(postoLibero, richiestaSosta);
 
             try {
                 Sosta sosta = new Sosta();
