@@ -1,8 +1,12 @@
 package it.mounir.MWbot.services;
 
 import it.mounir.MWbot.DTO.Richiesta;
+import it.mounir.MWbot.DTO.RichiestaRicarica;
 import it.mounir.MWbot.domain.StatoRicarica;
+import it.mounir.MWbot.domain.StatoSosta;
+import it.mounir.MWbot.domain.TipoServizio;
 import it.mounir.MWbot.model.Ricarica;
+import it.mounir.MWbot.model.Sosta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +21,12 @@ public class ParcheggioService {
     private final int maxPosti = 5;
 
     private final RicaricaRepositoryService ricaricaRepositoryService;
+    private final SostaRepositoryService sostaRepositoryService;
 
     @Autowired
-    public ParcheggioService(RicaricaRepositoryService ricaricaRepositoryService) {
+    public ParcheggioService(RicaricaRepositoryService ricaricaRepositoryService, SostaRepositoryService sostaRepositoryService) {
         this.ricaricaRepositoryService = ricaricaRepositoryService;
+        this.sostaRepositoryService = sostaRepositoryService;
 
         this.postiLiberi = new HashSet<>();
         this.tempoPostiOccupati = new HashMap<>();
@@ -35,21 +41,33 @@ public class ParcheggioService {
             tempoPostiOccupati.put(postoId, System.currentTimeMillis());
             System.out.println("Posto " + postoId + " è ora occupato.");
 
-            /* QUA FACCIO UPDATE NEL DB PER MODIFICARE LO STATO DELLA RICHIESTA
-            *   - con l'ID dell ricarica salvato in richiesta faccio una find e uso quella per modificare la query*/
-
             /*considera che il metodo viene già usato quando il veicolo non va in coda e per le richieste di tipo sosta */
-            Optional<Ricarica> ricaricaSalvata = ricaricaRepositoryService.getRicaricaById((long)richiesta.getIdRichiesta());
-            if (ricaricaSalvata.isPresent()) {
-                Ricarica ricarica = ricaricaSalvata.get();
+            if(richiesta.getTipoServizio().equals(TipoServizio.RICARICA)){  /*potrei usare anche TipoServizio*/
+                Optional<Ricarica> ricaricaSalvata = ricaricaRepositoryService.getRicaricaById((long)richiesta.getIdRichiesta());
+                if (ricaricaSalvata.isPresent()) {
+                    Ricarica ricarica = ricaricaSalvata.get();
 
-                if(ricarica.getStato() == 0) {
-                    ricarica.setStato(StatoRicarica.CHARGING.ordinal());
-                    ricaricaRepositoryService.createOrUpdateRicarica(ricarica);
+                    if(ricarica.getStato() == 0) {
+                        ricarica.setStato(StatoRicarica.CHARGING.ordinal());
+                        ricaricaRepositoryService.createOrUpdateRicarica(ricarica);
+                    }
+
+                } else {
+                    System.out.println("Ricarica non trovata.");
                 }
+            }
+            else {
+                Optional<Sosta> sostaSalvata = sostaRepositoryService.getSostaById((long)richiesta.getIdRichiesta());
+                if(sostaSalvata.isPresent()) {
+                    Sosta sosta = sostaSalvata.get();
 
-            } else {
-                System.out.println("Ricarica non trovata.");
+                    if(sosta.getStato() == 0) {
+                        sosta.setStato(StatoSosta.PARKING.ordinal());
+                        sostaRepositoryService.createOrUpdateSosta(sosta);
+                    }
+                } else {
+                    System.out.println("Sosta non trovata.");
+                }
             }
 
             return true;

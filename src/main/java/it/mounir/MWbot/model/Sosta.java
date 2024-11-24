@@ -20,6 +20,8 @@ public class Sosta {
     @Column("tempo_sosta")
     private int tempoSosta;
 
+    private int stato;
+
     public String getIdVeicolo() {
         return idVeicolo;
     }
@@ -50,5 +52,13 @@ public class Sosta {
 
     public void setTempoSosta(int tempoSosta) {
         this.tempoSosta = tempoSosta;
+    }
+
+    public int getStato() {
+        return stato;
+    }
+
+    public void setStato(int stato) {
+        this.stato = stato;
     }
 }

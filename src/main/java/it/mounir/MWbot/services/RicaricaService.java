@@ -70,6 +70,7 @@ public class RicaricaService {
         try{
             Ricarica ricaricaSalvata = ricaricaRepositoryService.createOrUpdateRicarica(ricarica);
             return ricaricaSalvata;
+
         }catch(RuntimeException e){
             System.err.println("Errore durante l'interazione con il DB: " + e.getMessage());
             throw new RuntimeException("Non è stato possibile completare la richiesta di ricarica", e);

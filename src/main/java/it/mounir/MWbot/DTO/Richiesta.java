@@ -1,7 +1,6 @@
 package it.mounir.MWbot.DTO;
 
 import it.mounir.MWbot.domain.TipoServizio;
-import it.mounir.MWbot.model.Ricarica;
 
 public abstract class Richiesta {
 
