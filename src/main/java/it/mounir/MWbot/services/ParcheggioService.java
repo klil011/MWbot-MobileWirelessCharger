@@ -1,5 +1,6 @@
 package it.mounir.MWbot.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.mounir.MWbot.DTO.Richiesta;
 import it.mounir.MWbot.DTO.RichiestaRicarica;
 import it.mounir.MWbot.domain.StatoRicarica;
@@ -7,6 +8,7 @@ import it.mounir.MWbot.domain.StatoSosta;
 import it.mounir.MWbot.domain.TipoServizio;
 import it.mounir.MWbot.model.Ricarica;
 import it.mounir.MWbot.model.Sosta;
+import it.mounir.MWbot.mqtt.MqttPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,11 +24,13 @@ public class ParcheggioService {
 
     private final RicaricaRepositoryService ricaricaRepositoryService;
     private final SostaRepositoryService sostaRepositoryService;
+    private final MqttPublisher mqttPublisher;
 
     @Autowired
-    public ParcheggioService(RicaricaRepositoryService ricaricaRepositoryService, SostaRepositoryService sostaRepositoryService) {
+    public ParcheggioService(RicaricaRepositoryService ricaricaRepositoryService, SostaRepositoryService sostaRepositoryService, MqttPublisher mqttPublisher) {
         this.ricaricaRepositoryService = ricaricaRepositoryService;
         this.sostaRepositoryService = sostaRepositoryService;
+        this.mqttPublisher = mqttPublisher;
 
         this.postiLiberi = new HashSet<>();
         this.tempoPostiOccupati = new HashMap<>();
@@ -69,6 +73,26 @@ public class ParcheggioService {
                     System.out.println("Sosta non trovata.");
                 }
             }
+
+            String topic = "Mwbot/Posto/" + postoId;
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            try {
+                String jsonPayload = objectMapper.writeValueAsString(richiesta);
+                mqttPublisher.publish(topic, jsonPayload);
+                System.out.println("Payload inviato: " + jsonPayload);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            /*  [INSERIRE] MQTT_pub al MWbot in cui verrà passato
+               Topic: Mwbot/Posto/
+
+            *       -id_richiesta
+            *       -n.posto
+            *       -tipo_servizio*/
+
+
 
             return true;
         }

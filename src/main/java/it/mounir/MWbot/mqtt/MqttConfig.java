@@ -12,7 +12,7 @@ public class MqttConfig {
 
     private static final String BROKER_URL = "tcp://localhost:1883";
     private static final String CLIENT_ID = "spring-mqtt-client";
-
+    
     @Bean
     public MqttClient mqttClient() throws MqttException {
         MqttClient client = new MqttClient(BROKER_URL, CLIENT_ID);

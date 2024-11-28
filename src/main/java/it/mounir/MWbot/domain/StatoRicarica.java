@@ -4,6 +4,7 @@ public enum StatoRicarica {
 
     WAITING,
     CHARGING,
-    COMPLETED
+    COMPLETED,
+    INTERRUPTED
 
 }
