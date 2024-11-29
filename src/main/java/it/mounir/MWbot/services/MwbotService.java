@@ -10,6 +10,9 @@ import it.mounir.MWbot.repositories.MwbotRepository;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 @Service
 public class MwbotService {
 
@@ -19,6 +22,7 @@ public class MwbotService {
     private final MwbotRepository mwbotRepository;
     private final MqttPublisher mqttPublisher;
     private final RicaricaRepositoryService ricaricaRepositoryService;
+    private final Queue<RichiestaRicarica> codaRicarica = new LinkedList<>();
 
     public MwbotService(MwbotRepository mwbotRepository, MqttPublisher mqttPublisher, RicaricaRepositoryService ricaricaRepositoryService) {
         this.mwbotRepository = mwbotRepository;
@@ -26,46 +30,56 @@ public class MwbotService {
         this.ricaricaRepositoryService = ricaricaRepositoryService;
     }
 
+    private void aggiungiRicaricaCoda(RichiestaRicarica richiestaRicarica) {
+        codaRicarica.add(richiestaRicarica);
+        System.out.println("Veicolo " + richiestaRicarica.getVeicoloId() + " è stato messo nella coda di ricarica.");
+    }
+
+    private RichiestaRicarica rimuoviRicaricaCoda() {
+        /* Restituisce null se la coda è vuota  */
+        return codaRicarica.poll();
+    }
+
     public void avviaRicarica(String postoId, RichiestaRicarica ricarica) {
+        aggiungiRicaricaCoda(ricarica);
 
         if (isRicaricaInCorso) {
-            System.out.println("Ricarica già in corso. Non è possibile avviare una nuova ricarica.");
+            System.out.println("Ricarica già in corso. Veicolo aggiunto alla coda.");
             return;
         }
 
+        isRicaricaInCorso = true;
 
-        isRicaricaInCorso = true; // Imposta lo stato
         ricaricaThread = new Thread(() -> {
             try {
-                int percentuale = ricarica.getPercentualeDesiderata() - ricarica.getPercentualeIniziale();
-                System.out.println("Inizio ricarica per il veicolo: " + ricarica.getVeicoloId());
-                int tempoDiRicarica = calcolaTempoRicarica(percentuale);
-                System.out.println("Tempo stimato di ricarica: " + tempoDiRicarica + " ms");
+                while (!codaRicarica.isEmpty()) {
+                    RichiestaRicarica richiestaCorrente = rimuoviRicaricaCoda();
+                    if (richiestaCorrente != null) {
+                        System.out.println("Inizio ricarica per il veicolo: " + richiestaCorrente.getVeicoloId());
+                        int percentuale = richiestaCorrente.getPercentualeDesiderata() - richiestaCorrente.getPercentualeIniziale();
+                        int tempoDiRicarica = calcolaTempoRicarica(percentuale);
 
-                Thread.sleep(tempoDiRicarica); // Simula la ricarica
+                        Thread.sleep(tempoDiRicarica); // Simula il tempo di ricarica
 
-                System.out.println("Ricarica completata per il veicolo: " + ricarica.getVeicoloId());
-                ricaricaRepositoryService.updateColumnById((long)ricarica.getIdRichiesta(), StatoRicarica.COMPLETED.ordinal());
+                        System.out.println("Ricarica completata per il veicolo: " + richiestaCorrente.getVeicoloId());
+                        ricaricaRepositoryService.updateColumnById((long) richiestaCorrente.getIdRichiesta(), StatoRicarica.COMPLETED.ordinal());
 
-                if (ricarica.getRiceviMessaggio().equals(true)) {
-                    /*  TODO inviare notifica se riceviMessaggio == true   */
-                    String topic = "Parcheggio/Messaggio/Posto/" + postoId;
-                    mqttPublisher.publish(topic, "Notifica: ricarica del veicolo con targa "
-                            + ricarica.getVeicoloId() + " terminata");
+                        if (richiestaCorrente.getRiceviMessaggio()) {
+                            String topic = "Parcheggio/Messaggio/Posto/" + postoId;
+                            mqttPublisher.publish(topic, "Notifica: ricarica del veicolo con targa "
+                                    + richiestaCorrente.getVeicoloId() + " terminata");
+                        }
+                    }
                 }
             } catch (InterruptedException | MqttException e) {
-                System.out.println("Ricarica interrotta per il veicolo: " + ricarica.getVeicoloId());
-                //aggiornaStatoDB(veicoloId, "interrotto");
+                System.out.println("Errore durante la ricarica: " + e.getMessage());
             } finally {
-                // Rilascia lo stato
-                synchronized (this) {
-                    isRicaricaInCorso = false;
-                }
+                isRicaricaInCorso = false;
+                System.out.println("Coda di ricarica vuota. Nessuna ricarica in corso.");
             }
         });
 
         ricaricaThread.start(); // Avvia il thread
-
     }
 
     private int calcolaTempoRicarica(int percentuale) {
