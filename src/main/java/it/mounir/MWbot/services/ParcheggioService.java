@@ -3,6 +3,7 @@ package it.mounir.MWbot.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.mounir.MWbot.DTO.Richiesta;
 import it.mounir.MWbot.DTO.RichiestaRicarica;
+import it.mounir.MWbot.domain.OccupazionePosto;
 import it.mounir.MWbot.domain.StatoRicarica;
 import it.mounir.MWbot.domain.StatoSosta;
 import it.mounir.MWbot.domain.TipoServizio;
@@ -19,7 +20,7 @@ import java.util.*;
 public class ParcheggioService {
 
     private final Set<String> postiLiberi;
-    private final Map<String, Long> tempoPostiOccupati;
+    private final Map<String, OccupazionePosto> tempoPostiOccupati;
     private final int maxPosti = 5;
 
     private final RicaricaRepositoryService ricaricaRepositoryService;
@@ -42,7 +43,7 @@ public class ParcheggioService {
 
     public boolean occupaPosto(String postoId, Richiesta richiesta) {
         if (postiLiberi.remove(postoId)) {
-            tempoPostiOccupati.put(postoId, System.currentTimeMillis());
+            tempoPostiOccupati.put(postoId, new OccupazionePosto(richiesta.getIdRichiesta(), richiesta.getTipoServizio(), System.currentTimeMillis()));
             System.out.println("Posto " + postoId + " è ora occupato.");
 
             /*considera che il metodo viene già usato quando il veicolo non va in coda e per le richieste di tipo sosta */
@@ -103,18 +104,24 @@ public class ParcheggioService {
 
     public void liberaPosto(String postoId) {
 
-        /*
-        *   Qua richiamo la funzione gestisci messaggio e controllo se postoId
-        *   è un posto di cui bisogna inviare un messaggio di fine ricarica
-        * */
         if (Integer.valueOf(postoId) >= 1 && Integer.valueOf(postoId) <= maxPosti) {
             postiLiberi.add(postoId);
 
             // Calcola il tempo di sosta
-            Long timestamp = tempoPostiOccupati.remove(postoId);
+            OccupazionePosto occupazionePosto = tempoPostiOccupati.remove(postoId);
+            Long timestamp = occupazionePosto.getTempo();
+
             if (timestamp != null) {
                 long tempoTrascorso = System.currentTimeMillis() - timestamp;
                 System.out.println("Il veicolo ha sostato per " + tempoTrascorso / 1000 + " secondi.");
+
+                if(occupazionePosto.getTipoServizio().equals(TipoServizio.SOSTA)) {
+                    /*  Richiamo SostaRepositoryService e aggiorno lo stato a PARKED    */
+                    sostaRepositoryService.updateColumnById((long)occupazionePosto.getIdRichiesta(), StatoSosta.PARKED.ordinal());
+                }
+                else {
+                    /*  Quindi se è ricarica salverò il tempo di sosta  */
+                }
             } else {
                 System.out.println("Posto " + postoId + " non era occupato.");
             }
@@ -124,7 +131,6 @@ public class ParcheggioService {
             System.out.println("Operazione non possibile, errore indice parcheggio");
         }
     }
-
 
     public String getPrimoPostoLibero() {
         return postiLiberi.stream().findFirst().orElse(null);

@@ -2,6 +2,8 @@ package it.mounir.MWbot.services;
 
 import it.mounir.MWbot.model.Sosta;
 import it.mounir.MWbot.repositories.SostaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -10,9 +12,12 @@ import java.util.Optional;
 public class SostaRepositoryService {
 
     private final SostaRepository sostaRepository;
+    private final JdbcTemplate jdbcTemplate;
 
-    public SostaRepositoryService(SostaRepository sostaRepository) {
+    @Autowired
+    public SostaRepositoryService(SostaRepository sostaRepository, JdbcTemplate jdbcTemplate) {
         this.sostaRepository = sostaRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     public Sosta createOrUpdateSosta (Sosta servizioSosta) {
@@ -21,5 +26,10 @@ public class SostaRepositoryService {
 
     public Optional<Sosta> getSostaById(Long id) {
         return sostaRepository.findById(id);
+    }
+
+    public int updateColumnById(Long id, int nuovoValore) {
+        String sql = "UPDATE \"sosta\" SET \"stato\" = ? WHERE \"id_sosta\" = ?";
+        return jdbcTemplate.update(sql, nuovoValore, id);
     }
 }
