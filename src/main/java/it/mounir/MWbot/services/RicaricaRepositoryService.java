@@ -31,8 +31,13 @@ public class RicaricaRepositoryService {
         return ricaricaRepository.findAll();
     }
 
-    public int updateColumnById(Long id, int nuovoValore) {
+    public int updateStatoById(Long id, int nuovoValore) {
         String sql = "UPDATE \"ricarica\" SET \"stato\" = ? WHERE \"id_ricarica\" = ?";
+        return jdbcTemplate.update(sql, nuovoValore, id);
+    }
+
+    public int updateTempoById(Long id, long nuovoValore) {
+        String sql = "UPDATE ricarica SET tempo_sosta = ? WHERE id_ricarica = ?";
         return jdbcTemplate.update(sql, nuovoValore, id);
     }
 }

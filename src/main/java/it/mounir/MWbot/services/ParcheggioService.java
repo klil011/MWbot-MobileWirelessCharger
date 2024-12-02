@@ -112,15 +112,17 @@ public class ParcheggioService {
             Long timestamp = occupazionePosto.getTempo();
 
             if (timestamp != null) {
-                long tempoTrascorso = System.currentTimeMillis() - timestamp;
-                System.out.println("Il veicolo ha sostato per " + tempoTrascorso / 1000 + " secondi.");
+                long tempoTrascorso = (System.currentTimeMillis() - timestamp) / 1000;
+                System.out.println("Il veicolo ha sostato per " + " secondi.");
 
                 if(occupazionePosto.getTipoServizio().equals(TipoServizio.SOSTA)) {
                     /*  Richiamo SostaRepositoryService e aggiorno lo stato a PARKED    */
-                    sostaRepositoryService.updateColumnById((long)occupazionePosto.getIdRichiesta(), StatoSosta.PARKED.ordinal());
+                    sostaRepositoryService.updateTempoById((long)occupazionePosto.getIdRichiesta(), tempoTrascorso);
+                    sostaRepositoryService.updateStatoById((long)occupazionePosto.getIdRichiesta(), StatoSosta.PARKED.ordinal());
                 }
                 else {
                     /*  Quindi se è ricarica salverò il tempo di sosta  */
+                    ricaricaRepositoryService.updateTempoById((long)occupazionePosto.getIdRichiesta(), tempoTrascorso);
                 }
             } else {
                 System.out.println("Posto " + postoId + " non era occupato.");

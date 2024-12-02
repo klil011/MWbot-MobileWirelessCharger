@@ -33,6 +33,9 @@ public class Ricarica {
 
     private Boolean notifica;
 
+    @Column("tempo_sosta")
+    private long tempoSosta;
+
     public int getIdRicarica() {
         return idRicarica;
     }
@@ -99,5 +102,13 @@ public class Ricarica {
 
     public void setNotifica(Boolean notifica) {
         this.notifica = notifica;
+    }
+
+    public long getTempoSosta() {
+        return tempoSosta;
+    }
+
+    public void setTempoSosta(long tempoSosta) {
+        this.tempoSosta = tempoSosta;
     }
 }

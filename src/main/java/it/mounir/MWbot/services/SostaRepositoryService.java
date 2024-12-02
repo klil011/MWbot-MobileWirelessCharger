@@ -28,8 +28,13 @@ public class SostaRepositoryService {
         return sostaRepository.findById(id);
     }
 
-    public int updateColumnById(Long id, int nuovoValore) {
+    public int updateStatoById(Long id, int nuovoValore) {
         String sql = "UPDATE \"sosta\" SET \"stato\" = ? WHERE \"id_sosta\" = ?";
+        return jdbcTemplate.update(sql, nuovoValore, id);
+    }
+
+    public int updateTempoById(Long id, long nuovoValore) {
+        String sql = "UPDATE sosta SET tempo_sosta = ? WHERE id_sosta = ?";
         return jdbcTemplate.update(sql, nuovoValore, id);
     }
 }

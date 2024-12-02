@@ -62,7 +62,7 @@ public class MwbotService {
                         Thread.sleep(tempoDiRicarica); // Simula il tempo di ricarica
 
                         System.out.println("Ricarica completata per il veicolo: " + richiestaCorrente.getVeicoloId());
-                        ricaricaRepositoryService.updateColumnById((long) richiestaCorrente.getIdRichiesta(), StatoRicarica.COMPLETED.ordinal());
+                        ricaricaRepositoryService.updateStatoById((long) richiestaCorrente.getIdRichiesta(), StatoRicarica.COMPLETED.ordinal());
 
                         if (richiestaCorrente.getRiceviMessaggio()) {
                             String topic = "Parcheggio/Messaggio/Posto/" + postoId;
