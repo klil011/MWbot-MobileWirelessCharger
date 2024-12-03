@@ -4,10 +4,10 @@ import it.mounir.MWbot.DTO.RichiestaRicarica;
 import it.mounir.MWbot.domain.StatoRicarica;
 import it.mounir.MWbot.domain.TipoServizio;
 import it.mounir.MWbot.model.Mwbot;
-import it.mounir.MWbot.model.Ricarica;
 import it.mounir.MWbot.mqtt.MqttPublisher;
 import it.mounir.MWbot.repositories.MwbotRepository;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -23,11 +23,14 @@ public class MwbotService {
     private final MqttPublisher mqttPublisher;
     private final RicaricaRepositoryService ricaricaRepositoryService;
     private final Queue<RichiestaRicarica> codaRicarica = new LinkedList<>();
+    private final PagamentoService pagamentoService;
 
-    public MwbotService(MwbotRepository mwbotRepository, MqttPublisher mqttPublisher, RicaricaRepositoryService ricaricaRepositoryService) {
+    @Autowired
+    public MwbotService(MwbotRepository mwbotRepository, MqttPublisher mqttPublisher, RicaricaRepositoryService ricaricaRepositoryService, PagamentoService pagamentoService) {
         this.mwbotRepository = mwbotRepository;
         this.mqttPublisher = mqttPublisher;
         this.ricaricaRepositoryService = ricaricaRepositoryService;
+        this.pagamentoService = pagamentoService;
     }
 
     private void aggiungiRicaricaCoda(RichiestaRicarica richiestaRicarica) {
@@ -63,7 +66,9 @@ public class MwbotService {
 
                         System.out.println("Ricarica completata per il veicolo: " + richiestaCorrente.getVeicoloId());
                         ricaricaRepositoryService.updateStatoById((long) richiestaCorrente.getIdRichiesta(), StatoRicarica.COMPLETED.ordinal());
+                        pagamentoService.calcolaImporto((int) tempoDiRicarica/1000, TipoServizio.RICARICA, richiestaCorrente.getIdUtente());
 
+                        /*  Qua si fa partire il service che si occupa di gestire il pagamento per la ricarica   */
                         if (richiestaCorrente.getRiceviMessaggio()) {
                             String topic = "Parcheggio/Messaggio/Posto/" + postoId;
                             mqttPublisher.publish(topic, "Notifica: ricarica del veicolo con targa "

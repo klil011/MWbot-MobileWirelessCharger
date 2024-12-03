@@ -1,7 +1,7 @@
 package it.mounir.MWbot.controllers;
 
 import it.mounir.MWbot.model.Pagamento;
-import it.mounir.MWbot.services.PagamentoService;
+import it.mounir.MWbot.services.PagamentoRepositoryService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,19 +10,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class PagamentoController {
 
-    private final PagamentoService pagamentoService;
+    private final PagamentoRepositoryService pagamentoRepositoryService;
 
-    public PagamentoController(PagamentoService pagamentoService) {
-        this.pagamentoService = pagamentoService;
+    public PagamentoController(PagamentoRepositoryService pagamentoRepositoryService) {
+        this.pagamentoRepositoryService = pagamentoRepositoryService;
     }
 
     @PostMapping("/pagamento")
     public Pagamento createPayment(@RequestBody Pagamento pagamento) {
-        return pagamentoService.createOrUpdatePagamento(pagamento);
+        return pagamentoRepositoryService.createOrUpdatePagamento(pagamento);
     }
 
     @GetMapping("/pagamenti")
     public Iterable<Pagamento> getAllPayments() {
-        return pagamentoService.getAllPagamenti();
+        return pagamentoRepositoryService.getAllPagamenti();
     }
 }

@@ -7,9 +7,11 @@ import it.mounir.MWbot.domain.OccupazionePosto;
 import it.mounir.MWbot.domain.StatoRicarica;
 import it.mounir.MWbot.domain.StatoSosta;
 import it.mounir.MWbot.domain.TipoServizio;
+import it.mounir.MWbot.model.Pagamento;
 import it.mounir.MWbot.model.Ricarica;
 import it.mounir.MWbot.model.Sosta;
 import it.mounir.MWbot.mqtt.MqttPublisher;
+import it.mounir.MWbot.repositories.PagamentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,12 +27,14 @@ public class ParcheggioService {
 
     private final RicaricaRepositoryService ricaricaRepositoryService;
     private final SostaRepositoryService sostaRepositoryService;
+    private final PagamentoService pagamentoService;
     private final MqttPublisher mqttPublisher;
 
     @Autowired
-    public ParcheggioService(RicaricaRepositoryService ricaricaRepositoryService, SostaRepositoryService sostaRepositoryService, MqttPublisher mqttPublisher) {
+    public ParcheggioService(RicaricaRepositoryService ricaricaRepositoryService, SostaRepositoryService sostaRepositoryService, PagamentoService pagamentoService, MqttPublisher mqttPublisher) {
         this.ricaricaRepositoryService = ricaricaRepositoryService;
         this.sostaRepositoryService = sostaRepositoryService;
+        this.pagamentoService = pagamentoService;
         this.mqttPublisher = mqttPublisher;
 
         this.postiLiberi = new HashSet<>();
@@ -43,7 +47,7 @@ public class ParcheggioService {
 
     public boolean occupaPosto(String postoId, Richiesta richiesta) {
         if (postiLiberi.remove(postoId)) {
-            tempoPostiOccupati.put(postoId, new OccupazionePosto(richiesta.getIdRichiesta(), richiesta.getTipoServizio(), System.currentTimeMillis()));
+            tempoPostiOccupati.put(postoId, new OccupazionePosto(richiesta.getIdRichiesta(), richiesta.getIdUtente(), richiesta.getTipoServizio(), System.currentTimeMillis()));
             System.out.println("Posto " + postoId + " è ora occupato.");
 
             /*considera che il metodo viene già usato quando il veicolo non va in coda e per le richieste di tipo sosta */
@@ -114,6 +118,12 @@ public class ParcheggioService {
             if (timestamp != null) {
                 long tempoTrascorso = (System.currentTimeMillis() - timestamp) / 1000;
                 System.out.println("Il veicolo ha sostato per " + " secondi.");
+
+                /*  Da qui richiamo il servizio che gestice il calcolo dell'importo
+                da pagare [PagamentoService.calcolaImporto(tempo, servizio, idUtente)]
+                che sarà riferito solo alla sosta, mentre per il costo di ricarica va gestito nel servizio MwbotService */
+
+                pagamentoService.calcolaImporto((int) tempoTrascorso, TipoServizio.SOSTA, occupazionePosto.getIdUtente());
 
                 if(occupazionePosto.getTipoServizio().equals(TipoServizio.SOSTA)) {
                     /*  Richiamo SostaRepositoryService e aggiorno lo stato a PARKED    */

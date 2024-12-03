@@ -16,7 +16,7 @@ public class Pagamento {
     @Column("id_utente")
     private int idUtente;
 
-    private int importo;
+    private double importo;
 
     private int servizio;
 
@@ -39,11 +39,11 @@ public class Pagamento {
         this.idUtente = idUtente;
     }
 
-    public int getImporto() {
+    public double getImporto() {
         return importo;
     }
 
-    public void setImporto(int importo) {
+    public void setImporto(double importo) {
         this.importo = importo;
     }
 

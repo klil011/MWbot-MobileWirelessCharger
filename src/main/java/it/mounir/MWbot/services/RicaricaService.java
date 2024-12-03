@@ -4,14 +4,9 @@ import it.mounir.MWbot.DTO.RichiestaRicarica;
 import it.mounir.MWbot.domain.StatoRicarica;
 import it.mounir.MWbot.domain.TipoServizio;
 import it.mounir.MWbot.model.Ricarica;
-import it.mounir.MWbot.mqtt.MqttPublisher;
-import it.mounir.MWbot.repositories.RicaricaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
-import static java.sql.Types.NULL;
 
 @Service
 public class RicaricaService {
