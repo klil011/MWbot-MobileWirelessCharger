@@ -32,7 +32,7 @@ public class RicaricaRepositoryService {
     }
 
     public int updateStatoById(Long id, int nuovoValore) {
-        String sql = "UPDATE \"ricarica\" SET \"stato\" = ? WHERE \"id_ricarica\" = ?";
+        String sql = "UPDATE ricarica SET stato = ? WHERE id_ricarica = ?";
         return jdbcTemplate.update(sql, nuovoValore, id);
     }
 

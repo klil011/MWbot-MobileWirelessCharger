@@ -14,7 +14,11 @@ public class Parcheggio {
     @Column("capacità")
     private int capacita;
 
+    @Column("costokw")
     private int costoKw;
+
+    @Column("costososta")
+    private int costoSosta;
 
     public int getIdParcheggio() {
         return idParcheggio;
@@ -38,5 +42,13 @@ public class Parcheggio {
 
     public void setCostoKw(int costoKw) {
         this.costoKw = costoKw;
+    }
+
+    public int getCostososta() {
+        return costoSosta;
+    }
+
+    public void setCostososta(int costoSosta) {
+        this.costoSosta = costoSosta;
     }
 }
