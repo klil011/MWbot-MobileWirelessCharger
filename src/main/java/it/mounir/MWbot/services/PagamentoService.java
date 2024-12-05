@@ -3,24 +3,33 @@ package it.mounir.MWbot.services;
 import it.mounir.MWbot.domain.TipoServizio;
 import it.mounir.MWbot.model.Pagamento;
 import it.mounir.MWbot.model.Ricarica;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Service
 public class PagamentoService {
 
-    private double costoKw = 2;
-    private double costoOra = 2;
+    private double costoKw;
+    private double costoOra;
     private final PagamentoRepositoryService pagamentoRepositoryService;
+    private final ParcheggioRepositoryService parcheggioRepositoryService;
 
-    public PagamentoService(PagamentoRepositoryService pagamentoRepositoryService) {
+    @Autowired
+    public PagamentoService(PagamentoRepositoryService pagamentoRepositoryService, ParcheggioRepositoryService parcheggioRepositoryService) {
         this.pagamentoRepositoryService = pagamentoRepositoryService;
+        this.parcheggioRepositoryService = parcheggioRepositoryService;
     }
 
     public double calcolaImporto(int tempo, TipoServizio servizio, long idUtente) {
+
+        costoKw = parcheggioRepositoryService.getCostoKwById(1L);
+        costoOra = parcheggioRepositoryService.getCostoSostaById(1L);
+
         double importo = 0;
         if(servizio.equals(TipoServizio.SOSTA)) {
             importo = tempo * costoOra;
