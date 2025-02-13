@@ -1,5 +1,6 @@
 package it.mounir.MWbot.services;
 
+import it.mounir.MWbot.model.Prenotazione;
 import it.mounir.MWbot.model.Utente;
 import it.mounir.MWbot.repositories.UtenteRepository;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,11 @@ public class UtenteService {
 
     public UtenteService(UtenteRepository utenteRepository) {
         this.utenteRepository = utenteRepository;
+    }
+
+    public int isUtentePremium(long idUtente) {
+
+        return utenteRepository.isUtentePremium(idUtente);
     }
 
     public Utente createOrUpdateAccount(Utente account) {

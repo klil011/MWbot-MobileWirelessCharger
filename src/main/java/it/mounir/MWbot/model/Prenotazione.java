@@ -1,5 +1,6 @@
 package it.mounir.MWbot.model;
 
+import it.mounir.MWbot.DTO.Richiesta;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -14,7 +15,7 @@ public class Prenotazione {
     private int idPrenotazione;
 
     @Column("id_utente")
-    private int idUtente;
+    private long idUtente;
 
     @Column("orario_prenotazione")
     private LocalDateTime orarioPrenotazione;
@@ -24,6 +25,8 @@ public class Prenotazione {
 
     private int  durata;
 
+    private Richiesta richiesta;
+
     public int getIdPrenotazione() {
         return idPrenotazione;
     }
@@ -32,11 +35,11 @@ public class Prenotazione {
         this.idPrenotazione = idPrenotazione;
     }
 
-    public int getIdUtente() {
+    public long getIdUtente() {
         return idUtente;
     }
 
-    public void setIdUtente(int idUtente) {
+    public void setIdUtente(long idUtente) {
         this.idUtente = idUtente;
     }
 
@@ -62,5 +65,13 @@ public class Prenotazione {
 
     public void setDurata(int durata) {
         this.durata = durata;
+    }
+
+    public Richiesta getRichiesta() {
+        return richiesta;
+    }
+
+    public void setRichiesta(Richiesta richiesta) {
+        this.richiesta = richiesta;
     }
 }

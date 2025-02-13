@@ -1,41 +1,47 @@
 package it.mounir.MWbot.services;
 
+import it.mounir.MWbot.DTO.Richiesta;
+import it.mounir.MWbot.DTO.RichiestaRicarica;
+import it.mounir.MWbot.DTO.RichiestaSosta;
+import it.mounir.MWbot.domain.TipoServizio;
 import it.mounir.MWbot.model.Prenotazione;
 import it.mounir.MWbot.repositories.PrenotazioneRepository;
+import it.mounir.MWbot.repositories.UtenteRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PrenotazioneService {
 
     private final PrenotazioneRepository prenotazioneRepository;
+    private final UtenteService utenteService;
 
-    public PrenotazioneService(PrenotazioneRepository prenotazioneRepository) {
+    private final ParcheggioService parcheggioService;
+    private final RicaricaService ricaricaService;
+    private final SostaService sostaService;
+
+    @Autowired
+    public PrenotazioneService(PrenotazioneRepository prenotazioneRepository, JdbcTemplate jdbcTemplate, UtenteService utenteService, ParcheggioService parcheggioService, RicaricaService ricaricaService, SostaService sostaService) {
         this.prenotazioneRepository = prenotazioneRepository;
+        this.utenteService = utenteService;
+        this.parcheggioService = parcheggioService;
+        this.ricaricaService = ricaricaService;
+        this.sostaService = sostaService;
     }
 
-    public Prenotazione createOrUpdatePrenotazione(Prenotazione prenotazione) {
-        return prenotazioneRepository.save(prenotazione);
-    }
+    public void gestisciPrenotazione (Prenotazione prenotazione) {
 
-    public boolean deletePrenotazioneById(Long id) {
-        if(prenotazioneRepository.existsById(id)) {
-            prenotazioneRepository.deleteById(id);
-            return true;
+        Richiesta richiesta = prenotazione.getRichiesta();
+
+        if (richiesta instanceof RichiestaRicarica) {
+            ricaricaService.richiestaRicarica((RichiestaRicarica) richiesta);
+        } else if (richiesta instanceof RichiestaSosta) {
+            sostaService.richiestaSosta((RichiestaSosta) richiesta);
+        } else {
+            throw new IllegalArgumentException("Tipo di richiesta non supportato");
         }
-        return false;
+
     }
 
-    public Optional<Prenotazione> getPrenotazioneById(Long id) {
-        return prenotazioneRepository.findById(id);
-    }
-
-    public Iterable<Prenotazione> getAllPrenotazioni() {
-        return prenotazioneRepository.findAll();
-    }
-
-    public List<Prenotazione> findPrenotazioniByUtente(Long id) {
-        return prenotazioneRepository.findPrenotazioniByUtente(id);
-    }
 }

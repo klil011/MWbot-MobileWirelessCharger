@@ -2,7 +2,6 @@ package it.mounir.MWbot.services;
 
 import it.mounir.MWbot.model.Ricarica;
 import it.mounir.MWbot.repositories.RicaricaRepository;
-import org.springframework.boot.autoconfigure.batch.BatchProperties;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 

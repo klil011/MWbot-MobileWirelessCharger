@@ -57,7 +57,6 @@ public class MqttSubscriber implements MqttCallback {
         }
 
         if(topic.equals("Mwbot/Posto/" + postoId)) {
-            System.out.println("ciaoooo");
             gestisciRichiesta(postoId, contenuto);
         }
     }
