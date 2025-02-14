@@ -47,7 +47,9 @@ public class ParcheggioService {
 
     public boolean occupaPosto(String postoId, Richiesta richiesta) {
         if (postiLiberi.remove(postoId)) {
-            tempoPostiOccupati.put(postoId, new OccupazionePosto(richiesta.getIdRichiesta(), richiesta.getIdUtente(), richiesta.getTipoServizio(), System.currentTimeMillis()));
+            tempoPostiOccupati.put(postoId, new OccupazionePosto(richiesta.getIdRichiesta(), richiesta.getIdUtente(),
+                    richiesta.getTipoServizio(), System.currentTimeMillis(), richiesta.getInizio(), richiesta.getFine()));
+
             System.out.println("Posto " + postoId + " è ora occupato.");
 
             /*considera che il metodo viene già usato quando il veicolo non va in coda e per le richieste di tipo sosta */

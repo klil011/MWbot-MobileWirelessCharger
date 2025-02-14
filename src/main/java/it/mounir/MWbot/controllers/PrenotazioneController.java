@@ -41,6 +41,8 @@ public class PrenotazioneController {
                         .body("nessun posto libero dispnibile per essere prenotato");
             }
             prenotazioneService.gestisciPrenotazione(prenotazione);
+
+            //FIXME: in realtà è completata la prenotazione se poi effettimente non entra in conflitto con un altra prenotazione
             return ResponseEntity.ok("Prenotazione effettuata");
         }
 

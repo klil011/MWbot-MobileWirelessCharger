@@ -33,6 +33,9 @@ public class PrenotazioneService {
     public void gestisciPrenotazione (Prenotazione prenotazione) {
 
         Richiesta richiesta = prenotazione.getRichiesta();
+        
+        richiesta.setInizio(prenotazione.getOrarioInizio());
+        richiesta.setFine(prenotazione.getOrarioFine());
 
         if (richiesta instanceof RichiestaRicarica) {
             ricaricaService.richiestaRicarica((RichiestaRicarica) richiesta);

@@ -17,13 +17,11 @@ public class Prenotazione {
     @Column("id_utente")
     private long idUtente;
 
-    @Column("orario_prenotazione")
-    private LocalDateTime orarioPrenotazione;
+    @Column("orario_inizio")
+    private LocalDateTime orarioInizio;
 
-    @Column("orario_effettivo")
-    private LocalDateTime orarioEffettivo;
-
-    private int  durata;
+    @Column("orario_fine")
+    private LocalDateTime orarioFine;
 
     private Richiesta richiesta;
 
@@ -43,28 +41,20 @@ public class Prenotazione {
         this.idUtente = idUtente;
     }
 
-    public LocalDateTime getOrarioPrenotazione() {
-        return orarioPrenotazione;
+    public LocalDateTime getOrarioInizio() {
+        return orarioInizio;
     }
 
-    public void setOrarioPrenotazione(LocalDateTime orarioPrenotazione) {
-        this.orarioPrenotazione = orarioPrenotazione;
+    public void setOrarioInizio(LocalDateTime orarioInizio) {
+        this.orarioInizio = orarioInizio;
     }
 
-    public LocalDateTime getOrarioEffettivo() {
-        return orarioEffettivo;
+    public LocalDateTime getOrarioFine() {
+        return orarioFine;
     }
 
-    public void setOrarioEffettivo(LocalDateTime orarioEffettivo) {
-        this.orarioEffettivo = orarioEffettivo;
-    }
-
-    public int getDurata() {
-        return durata;
-    }
-
-    public void setDurata(int durata) {
-        this.durata = durata;
+    public void setOrarioFine(LocalDateTime orarioFine) {
+        this.orarioFine = orarioFine;
     }
 
     public Richiesta getRichiesta() {

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import it.mounir.MWbot.domain.TipoServizio;
 
+import java.time.LocalDateTime;
+
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "tipoServizio", visible = true)  // Usa il campo 'tipoServizio' come discriminatore
 @JsonSubTypes({
         @JsonSubTypes.Type(value = RichiestaRicarica.class, name = "RICARICA"),
@@ -15,6 +17,9 @@ public abstract class Richiesta {
     private int idUtente;
     private String veicoloId;
     private TipoServizio tipoServizio;
+
+    private LocalDateTime inizio;
+    private LocalDateTime fine;
 
     public int getIdUtente() {
         return idUtente;
@@ -60,4 +65,19 @@ public abstract class Richiesta {
         return richiesta instanceof RichiestaRicarica;
     }
 
+    public LocalDateTime getFine() {
+        return fine;
+    }
+
+    public void setFine(LocalDateTime fine) {
+        this.fine = fine;
+    }
+
+    public LocalDateTime getInizio() {
+        return inizio;
+    }
+
+    public void setInizio(LocalDateTime inizio) {
+        this.inizio = inizio;
+    }
 }
