@@ -22,7 +22,7 @@ import java.util.*;
 public class ParcheggioService {
 
     private final Set<String> postiLiberi;
-    private final Map<String, OccupazionePosto> tempoPostiOccupati;
+    private final Map<String, List<OccupazionePosto>> tempoPostiOccupati;
     private final int maxPosti = 5;
 
     private final RicaricaRepositoryService ricaricaRepositoryService;
@@ -42,12 +42,14 @@ public class ParcheggioService {
 
         for (int i = 1; i <= maxPosti; i++) {
             postiLiberi.add(String.valueOf(i));
+            tempoPostiOccupati.put(String.valueOf(i), new ArrayList<>());
         }
     }
 
     public boolean occupaPosto(String postoId, Richiesta richiesta) {
         if (postiLiberi.remove(postoId)) {
-            tempoPostiOccupati.put(postoId, new OccupazionePosto(richiesta.getIdRichiesta(), richiesta.getIdUtente(),
+
+            tempoPostiOccupati.get(postoId).add(new OccupazionePosto(richiesta.getIdRichiesta(), richiesta.getIdUtente(),
                     richiesta.getTipoServizio(), System.currentTimeMillis(), richiesta.getInizio(), richiesta.getFine()));
 
             System.out.println("Posto " + postoId + " è ora occupato.");
@@ -114,7 +116,7 @@ public class ParcheggioService {
             postiLiberi.add(postoId);
 
             // Calcola il tempo di sosta
-            OccupazionePosto occupazionePosto = tempoPostiOccupati.remove(postoId);
+            OccupazionePosto occupazionePosto = tempoPostiOccupati.get(postoId).removeFirst();
             Long timestamp = occupazionePosto.getTempo();
 
             if (timestamp != null) {
