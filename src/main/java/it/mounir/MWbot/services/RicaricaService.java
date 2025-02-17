@@ -25,6 +25,7 @@ public class RicaricaService {
 
     public void richiestaRicarica(RichiestaRicarica richiestaRicarica) {
         /*stazione di ricarica*/
+
         String stazioneLibera  = parcheggioService.getPrimoPostoLibero();
         richiestaRicarica.setTipoServizio(TipoServizio.RICARICA);
 
@@ -40,6 +41,10 @@ public class RicaricaService {
 
             System.out.println("Veicolo " + richiestaRicarica.getVeicoloId() + " ha occupato la stazione di ricarica " + stazioneLibera + ".");
         } else {
+
+            /*FIXME: per le richieste di ricarica con prenotazione devo verificare anche che ci possa essere un
+             *  arco temporale libero per inserire la prenotazione e non bassarmi semplicemente se a stazione è libera o occupata*/
+
             ricarica.setStato(StatoRicarica.WAITING.ordinal()); /* perchè viene messo in coda di attesa */
             Ricarica ricaricaSalvata = this.salvaRichiestaRicarica(ricarica);
             richiestaRicarica.setIdRichiesta(ricaricaSalvata.getIdRicarica());

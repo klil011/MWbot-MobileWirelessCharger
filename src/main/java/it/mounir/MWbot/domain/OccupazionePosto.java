@@ -44,4 +44,8 @@ public class OccupazionePosto {
         return inizio;
     }
 
+    public boolean isPrenotazione() {
+        return inizio != null && fine != null;
+    }
+
 }

@@ -30,25 +30,27 @@ public class PrenotazioneController {
     public ResponseEntity<String> createPrenotazione(@RequestBody Prenotazione prenotazione) {
 
         /*
-        * TODO: richiamare prenotazioneService pre controllare che l'utente sia effettivamente di tipo premium,
-        *  se si allora salvare la prenotazione, altrimenti restituisci un messaggio di errore.*/
+         * TODO: richiamare prenotazioneService pre controllare che l'utente sia effettivamente di tipo premium,
+         *  se si allora salvare la prenotazione, altrimenti restituisci un messaggio di errore.*/
 
-        if(utenteService.isUtentePremium(prenotazione.getIdUtente()) > 0) {
-
-            if (parcheggioService.getPostiLiberiCount() < 1) {
-                return ResponseEntity
-                        .status(HttpStatus.NOT_ACCEPTABLE)
-                        .body("nessun posto libero dispnibile per essere prenotato");
-            }
-            prenotazioneService.gestisciPrenotazione(prenotazione);
-
-            //FIXME: in realtà è completata la prenotazione se poi effettimente non entra in conflitto con un altra prenotazione
-            return ResponseEntity.ok("Prenotazione effettuata");
+        if (utenteService.isUtentePremium(prenotazione.getIdUtente()) != 1) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body("vincolo tipo utente premium non soddisfatto");
         }
 
-        return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
-                .body("vincolo tipo utente premium non soddisfatto");
+        if (!parcheggioService.disponibilitaPrenotazione(prenotazione.getOrarioInizio(), prenotazione.getOrarioFine())
+                && parcheggioService.getPostiLiberiCount() < 1) {
+
+            return ResponseEntity
+                    .status(HttpStatus.NOT_ACCEPTABLE)
+                    .body("nessun posto libero dispnibile per essere prenotato");
+        }
+        prenotazioneService.gestisciPrenotazione(prenotazione);
+
+        //FIXME: in realtà è completata la prenotazione se poi effettimente non entra in conflitto con un altra prenotazione
+        return ResponseEntity.ok("Prenotazione effettuata");
+
     }
 
     @DeleteMapping("/prenotazione/{id}")

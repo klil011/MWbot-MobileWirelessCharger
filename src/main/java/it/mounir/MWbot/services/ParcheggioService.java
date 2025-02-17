@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -94,15 +95,6 @@ public class ParcheggioService {
                 e.printStackTrace();
             }
 
-            /*  [INSERIRE] MQTT_pub al MWbot in cui verrà passato
-               Topic: Mwbot/Posto/
-
-            *       -id_richiesta
-            *       -n.posto
-            *       -tipo_servizio*/
-
-
-
             return true;
         }
 
@@ -121,7 +113,7 @@ public class ParcheggioService {
 
             if (timestamp != null) {
                 long tempoTrascorso = (System.currentTimeMillis() - timestamp) / 1000;
-                System.out.println("Il veicolo ha sostato per " + " secondi.");
+                System.out.println("Il veicolo ha sostato per " + tempoTrascorso + " secondi.");
 
                 /*  Da qui richiamo il servizio che gestice il calcolo dell'importo
                 da pagare [PagamentoService.calcolaImporto(tempo, servizio, idUtente)]
@@ -146,6 +138,27 @@ public class ParcheggioService {
         } else {
             System.out.println("Operazione non possibile, errore indice parcheggio");
         }
+    }
+
+    public boolean disponibilitaPrenotazione(LocalDateTime inizio, LocalDateTime fine) {
+        if (inizio == null || fine == null) {
+            return false;  // Evita il controllo su null esplicitamente
+        }
+
+        for (List<OccupazionePosto> occupazioni : tempoPostiOccupati.values()) {
+            for (OccupazionePosto occupazione : occupazioni) {
+
+                // Controllo solo i parcheggi riservati con prenotazione
+                if (occupazione.isPrenotazione()) {
+                    // Controllo di sovrapposizione
+                    if (inizio.isBefore(occupazione.getFine()) && fine.isAfter(occupazione.getInizio())) {
+                        return false;  // La prenotazione si sovrappone, non disponibile
+                    }
+                }
+            }
+        }
+
+        return true;  // Nessuna sovrapposizione trovata, prenotazione disponibile
     }
 
     public String getPrimoPostoLibero() {
