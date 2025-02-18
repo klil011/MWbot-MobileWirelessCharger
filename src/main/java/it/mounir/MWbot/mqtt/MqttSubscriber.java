@@ -3,6 +3,7 @@ package it.mounir.MWbot.mqtt;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import it.mounir.MWbot.DTO.Richiesta;
 import it.mounir.MWbot.DTO.RichiestaRicarica;
 import it.mounir.MWbot.services.CodaService;
@@ -73,6 +74,7 @@ public class MqttSubscriber implements MqttCallback {
 
 
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule()); // Aggiunge il supporto per LocalDateTime
 
         Richiesta richiesta = null;
         try {

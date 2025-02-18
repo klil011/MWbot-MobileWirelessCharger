@@ -56,7 +56,13 @@ public class RicaricaService {
     private Ricarica creaOggettoRicarica(RichiestaRicarica richiestaRicarica) {
         Ricarica ricarica = new Ricarica();
         ricarica.setIdMwbot(1);  /* per semplicità si suppone che ci sia un solo MWbot */
-        ricarica.setIdPrenotazione(null); /* per il momento non ho ancora gestito le prenotazioni */
+
+        if (richiestaRicarica.getIdPrenotazione() != null) {
+            ricarica.setIdPrenotazione(richiestaRicarica.getIdPrenotazione());
+        }
+        else {
+            ricarica.setIdPrenotazione(null);
+        }
         ricarica.setIdVeicolo(richiestaRicarica.getVeicoloId());
         ricarica.setIdUtente(richiestaRicarica.getIdUtente());
         ricarica.setNotifica(richiestaRicarica.getRiceviMessaggio());

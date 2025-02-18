@@ -20,6 +20,9 @@ public class Sosta {
     @Column("tempo_sosta")
     private int tempoSosta;
 
+    @Column("id_prenotazione")
+    private Integer idPrenotazione;
+
     private int stato;
 
     public String getIdVeicolo() {
@@ -60,5 +63,13 @@ public class Sosta {
 
     public void setStato(int stato) {
         this.stato = stato;
+    }
+
+    public Integer getIdPrenotazione() {
+        return idPrenotazione;
+    }
+
+    public void setIdPrenotazione(Integer idPrenotazione) {
+        this.idPrenotazione = idPrenotazione;
     }
 }

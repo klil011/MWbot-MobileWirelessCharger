@@ -1,5 +1,6 @@
 package it.mounir.MWbot.DTO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import it.mounir.MWbot.domain.TipoServizio;
@@ -20,6 +21,7 @@ public abstract class Richiesta {
 
     private LocalDateTime inizio;
     private LocalDateTime fine;
+    private Integer idPrenotazione;
 
     public int getIdUtente() {
         return idUtente;
@@ -79,5 +81,13 @@ public abstract class Richiesta {
 
     public void setInizio(LocalDateTime inizio) {
         this.inizio = inizio;
+    }
+
+    public Integer getIdPrenotazione() {
+        return idPrenotazione;
+    }
+
+    public void setIdPrenotazione(Integer idPrenotazione) {
+        this.idPrenotazione = idPrenotazione;
     }
 }

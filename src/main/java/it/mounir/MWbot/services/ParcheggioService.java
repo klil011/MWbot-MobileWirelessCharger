@@ -1,6 +1,8 @@
 package it.mounir.MWbot.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import it.mounir.MWbot.DTO.Richiesta;
 import it.mounir.MWbot.DTO.RichiestaRicarica;
 import it.mounir.MWbot.domain.OccupazionePosto;
@@ -85,7 +87,11 @@ public class ParcheggioService {
             }
 
             String topic = "Mwbot/Posto/" + postoId;
+
             ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule()); // Registriamo il modulo per Java 8 Date/Time
+            objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // Evitiamo la serializzazione come timestamp
+
 
             try {
                 String jsonPayload = objectMapper.writeValueAsString(richiesta);

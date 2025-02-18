@@ -54,6 +54,13 @@ public class SostaService {
         sosta.setIdVeicolo(richiestaSosta.getVeicoloId());
         sosta.setTempoSosta(richiestaSosta.getTempoSosta());
 
+        if (richiestaSosta.getIdPrenotazione() != null) {
+            sosta.setIdPrenotazione(richiestaSosta.getIdPrenotazione());
+        }
+        else {
+            sosta.setIdPrenotazione(richiestaSosta.getIdPrenotazione());
+        }
+
         return sosta;
     }
 
