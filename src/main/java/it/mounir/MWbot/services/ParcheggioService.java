@@ -57,8 +57,8 @@ public class ParcheggioService {
 
             System.out.println("Posto " + postoId + " è ora occupato.");
 
-            /*considera che il metodo viene già usato quando il veicolo non va in coda e per le richieste di tipo sosta */
-            if(richiesta.getTipoServizio().equals(TipoServizio.RICARICA)){  /*potrei usare anche TipoServizio*/
+            /*  Aggiornamento dello stato della ricarica da WAITING a CHARGING  */
+            if(richiesta.getTipoServizio().equals(TipoServizio.RICARICA)){
                 Optional<Ricarica> ricaricaSalvata = ricaricaRepositoryService.getRicaricaById((long)richiesta.getIdRichiesta());
                 if (ricaricaSalvata.isPresent()) {
                     Ricarica ricarica = ricaricaSalvata.get();
@@ -69,7 +69,9 @@ public class ParcheggioService {
                     }
 
                 } else {
+                    /*  FIXME: dovrebbe lanciare un eccezzione perchè la ricarica non viene trovata  */
                     System.out.println("Ricarica non trovata.");
+                    return false;
                 }
             }
             else {
@@ -82,7 +84,9 @@ public class ParcheggioService {
                         sostaRepositoryService.createOrUpdateSosta(sosta);
                     }
                 } else {
+                    /*  FIXME: dovrebbe lanciare un eccezzione perchè la sosta non viene trovata  */
                     System.out.println("Sosta non trovata.");
+                    return false;
                 }
             }
 
@@ -148,24 +152,37 @@ public class ParcheggioService {
 
     public boolean disponibilitaPrenotazione(LocalDateTime inizio, LocalDateTime fine) {
         if (inizio == null || fine == null) {
-            return false;  // Evita il controllo su null esplicitamente
+            return false;
         }
 
         for (List<OccupazionePosto> occupazioni : tempoPostiOccupati.values()) {
-            for (OccupazionePosto occupazione : occupazioni) {
+            for (int i = 0; i < occupazioni.size(); i++) {
+                OccupazionePosto occupazione = occupazioni.get(i);
 
-                // Controllo solo i parcheggi riservati con prenotazione
+                // Controllo solo i parcheggi con prenotazione
                 if (occupazione.isPrenotazione()) {
-                    // Controllo di sovrapposizione
-                    if (inizio.isBefore(occupazione.getFine()) && fine.isAfter(occupazione.getInizio())) {
-                        return false;  // La prenotazione si sovrappone, non disponibile
+
+                    // Se il nuovo intervallo NON si sovrappone all'attuale prenotazione
+                    if (fine.isBefore(occupazione.getInizio()) || inizio.isAfter(occupazione.getFine())) {
+
+                        // Se siamo all'ultima prenotazione, allora lo slot è libero
+                        if (i == occupazioni.size() - 1) {
+                            return true;
+                        }
+
+                        // Se c'è una prenotazione successiva, verifico che il periodo termini prima di essa
+                        OccupazionePosto next = occupazioni.get(i + 1);
+                        if (fine.isBefore(next.getInizio())) {
+                            return true;
+                        }
                     }
                 }
             }
         }
 
-        return true;  // Nessuna sovrapposizione trovata, prenotazione disponibile
+        return false;
     }
+
 
     public String getPrimoPostoLibero() {
         return postiLiberi.stream().findFirst().orElse(null);

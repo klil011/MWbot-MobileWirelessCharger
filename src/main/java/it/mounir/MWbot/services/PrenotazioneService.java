@@ -40,7 +40,6 @@ public class PrenotazioneService {
             richiesta.setIdPrenotazione(prenotazioneSalvata.getIdPrenotazione());
             ricaricaService.richiestaRicarica((RichiestaRicarica) richiesta);
         } else if (richiesta instanceof RichiestaSosta) {
-            /*FIXME: bisogna inserire l'ID della prenotazione nella richiesta di sosta*/
             richiesta.setIdPrenotazione(prenotazioneSalvata.getIdPrenotazione());
             sostaService.richiestaSosta((RichiestaSosta) richiesta);
         } else {
