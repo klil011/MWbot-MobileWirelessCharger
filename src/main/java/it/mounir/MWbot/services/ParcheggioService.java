@@ -52,64 +52,74 @@ public class ParcheggioService {
     public boolean occupaPosto(String postoId, Richiesta richiesta) {
         if (postiLiberi.remove(postoId)) {
 
-            tempoPostiOccupati.get(postoId).add(new OccupazionePosto(richiesta.getIdRichiesta(), richiesta.getIdUtente(),
-                    richiesta.getTipoServizio(), System.currentTimeMillis(), richiesta.getInizio(), richiesta.getFine()));
+            tempoPostiOccupati.get(postoId).add(creaOggettoOccupazionePosto(richiesta));
 
             System.out.println("Posto " + postoId + " è ora occupato.");
 
-            /*  Aggiornamento dello stato della ricarica da WAITING a CHARGING  */
-            if(richiesta.getTipoServizio().equals(TipoServizio.RICARICA)){
-                Optional<Ricarica> ricaricaSalvata = ricaricaRepositoryService.getRicaricaById((long)richiesta.getIdRichiesta());
-                if (ricaricaSalvata.isPresent()) {
-                    Ricarica ricarica = ricaricaSalvata.get();
+            aggiornaStato(richiesta);
 
-                    if(ricarica.getStato() == 0) {
-                        ricarica.setStato(StatoRicarica.CHARGING.ordinal());
-                        ricaricaRepositoryService.createOrUpdateRicarica(ricarica);
-                    }
-
-                } else {
-                    /*  FIXME: dovrebbe lanciare un eccezzione perchè la ricarica non viene trovata  */
-                    System.out.println("Ricarica non trovata.");
-                    return false;
-                }
-            }
-            else {
-                Optional<Sosta> sostaSalvata = sostaRepositoryService.getSostaById((long)richiesta.getIdRichiesta());
-                if(sostaSalvata.isPresent()) {
-                    Sosta sosta = sostaSalvata.get();
-
-                    if(sosta.getStato() == 0) {
-                        sosta.setStato(StatoSosta.PARKING.ordinal());
-                        sostaRepositoryService.createOrUpdateSosta(sosta);
-                    }
-                } else {
-                    /*  FIXME: dovrebbe lanciare un eccezzione perchè la sosta non viene trovata  */
-                    System.out.println("Sosta non trovata.");
-                    return false;
-                }
-            }
-
-            String topic = "Mwbot/Posto/" + postoId;
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.registerModule(new JavaTimeModule()); // Registriamo il modulo per Java 8 Date/Time
-            objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // Evitiamo la serializzazione come timestamp
-
-
-            try {
-                String jsonPayload = objectMapper.writeValueAsString(richiesta);
-                mqttPublisher.publish(topic, jsonPayload);
-                System.out.println("Payload inviato: " + jsonPayload);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            informaMwbot(richiesta, postoId);
 
             return true;
         }
 
         System.out.println("Posto " + postoId + " non è disponibile.");
         return false;
+    }
+
+    private void informaMwbot(Richiesta richiesta, String postoId) {
+        String topic = "Mwbot/Posto/" + postoId;
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule()); // Registriamo il modulo per Java 8 Date/Time
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // Evitiamo la serializzazione come timestamp
+
+
+        try {
+            String jsonPayload = objectMapper.writeValueAsString(richiesta);
+            mqttPublisher.publish(topic, jsonPayload);
+            System.out.println("Payload inviato: " + jsonPayload);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private OccupazionePosto creaOggettoOccupazionePosto(Richiesta richiesta) {
+        return new OccupazionePosto(richiesta.getIdRichiesta(), richiesta.getIdUtente(),
+                richiesta.getTipoServizio(), System.currentTimeMillis(), richiesta.getInizio(), richiesta.getFine());
+    }
+
+    private void aggiornaStato(Richiesta richiesta) {
+        /*  Aggiornamento dello stato della ricarica da WAITING a CHARGING  */
+        if(richiesta.getTipoServizio().equals(TipoServizio.RICARICA)){
+            Optional<Ricarica> ricaricaSalvata = ricaricaRepositoryService.getRicaricaById((long)richiesta.getIdRichiesta());
+            if (ricaricaSalvata.isPresent()) {
+                Ricarica ricarica = ricaricaSalvata.get();
+
+                if(ricarica.getStato() == 0) {
+                    ricarica.setStato(StatoRicarica.CHARGING.ordinal());
+                    ricaricaRepositoryService.createOrUpdateRicarica(ricarica);
+                }
+
+            } else {
+                /*  FIXME: dovrebbe lanciare un eccezzione perchè la ricarica non viene trovata  */
+                System.out.println("Ricarica non trovata.");
+            }
+        }
+        else {
+            Optional<Sosta> sostaSalvata = sostaRepositoryService.getSostaById((long)richiesta.getIdRichiesta());
+            if(sostaSalvata.isPresent()) {
+                Sosta sosta = sostaSalvata.get();
+
+                if(sosta.getStato() == 0) {
+                    sosta.setStato(StatoSosta.PARKING.ordinal());
+                    sostaRepositoryService.createOrUpdateSosta(sosta);
+                }
+            } else {
+                /*  FIXME: dovrebbe lanciare un eccezzione perchè la sosta non viene trovata  */
+                System.out.println("Sosta non trovata.");
+            }
+        }
     }
 
     public void liberaPosto(String postoId) {
