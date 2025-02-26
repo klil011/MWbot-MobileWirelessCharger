@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
 
 @RestController
 public class ParcheggioController {
@@ -41,7 +40,13 @@ public class ParcheggioController {
     @PostMapping("/aggiorna/costo/orario")
     public ResponseEntity<String> aggiornaCostoOrario(@RequestParam int idParcheggio, @RequestParam int costoSosta) {
 
-        /*FIXME: verificare che l'ID del parcheggio esista*/
+        /* Il sistema gestisce un solo parcheggio, quindi per semplicità il controllo è posto solo su un valore unico */
+        if (idParcheggio != 1) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .build();
+        }
+
         parcheggioRepositoryService.updateCostoSostaById(idParcheggio, costoSosta);
         return ResponseEntity
                 .ok("Costo sosta orario aggiornato con successo !");
@@ -51,6 +56,12 @@ public class ParcheggioController {
     public ResponseEntity<String> aggiornaCostoKw(@RequestParam int idParcheggio, @RequestParam int costoKw) {
 
         /*FIXME: verificare che l'ID del parcheggio esista*/
+        if (idParcheggio != 1) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .build();
+        }
+
         parcheggioRepositoryService.updateCostoKwById(idParcheggio, costoKw);
         return ResponseEntity
                 .ok("Costo di ricarica aggiornato con successo !");
