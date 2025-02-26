@@ -2,6 +2,7 @@ package it.mounir.MWbot.controllers;
 
 import it.mounir.MWbot.DTO.RichiestaSosta;
 import it.mounir.MWbot.services.SostaService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,8 +17,9 @@ public class SostaController {
     }
 
     @PostMapping("/sosta")
-    public String richiestaSosta(@RequestBody RichiestaSosta richiestaSosta) {
+    public ResponseEntity<String> richiestaSosta(@RequestBody RichiestaSosta richiestaSosta) {
         sostaService.richiestaSosta(richiestaSosta);
-        return "Richiesta di sosta ricevuta per veicolo " + richiestaSosta.getVeicoloId();
+        return ResponseEntity
+                .ok("Richiesta di sosta ricevuta per veicolo " + richiestaSosta.getVeicoloId());
     }
 }

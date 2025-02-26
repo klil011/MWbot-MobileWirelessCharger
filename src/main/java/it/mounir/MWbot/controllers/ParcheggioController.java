@@ -1,11 +1,12 @@
 package it.mounir.MWbot.controllers;
 
-import it.mounir.MWbot.model.Parcheggio;
 import it.mounir.MWbot.services.CodaService;
 import it.mounir.MWbot.services.ParcheggioRepositoryService;
 import it.mounir.MWbot.services.ParcheggioService;
 import it.mounir.MWbot.services.SostaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -25,25 +26,34 @@ public class ParcheggioController {
     }
 
     @GetMapping("/monitor")
-    public String monitor() {
+    public ResponseEntity<String> monitor() {
         if(parcheggioService.getPostiLiberiCount() == 0) {
-            return "Tutti i posti sono al momento occupati, ci sono " + codaService.getCodaRichiesteCount()
-                    + " veicoli in coda.";
+            return ResponseEntity
+                    .status(HttpStatus.NOT_ACCEPTABLE)
+                    .body("Tutti i posti sono al momento occupati, ci sono " + codaService.getCodaRichiesteCount()
+                            + " veicoli in coda.");
         }
 
-        return "Parcheggi disponibili: " + parcheggioService.getPostiLiberiCount();
+        return ResponseEntity
+                .ok("Parcheggi disponibili: " + parcheggioService.getPostiLiberiCount());
     }
 
     @PostMapping("/aggiorna/costo/orario")
-    public String aggiornaCostoOrario(@RequestParam int idParcheggio, @RequestParam int costoSosta) {
+    public ResponseEntity<String> aggiornaCostoOrario(@RequestParam int idParcheggio, @RequestParam int costoSosta) {
+
+        /*FIXME: verificare che l'ID del parcheggio esista*/
         parcheggioRepositoryService.updateCostoSostaById(idParcheggio, costoSosta);
-        return "Costo sosta orario aggiornato con successo !";
+        return ResponseEntity
+                .ok("Costo sosta orario aggiornato con successo !");
     }
 
     @PostMapping("/aggiorna/costo/kw")
-    public String aggiornaCostoKw(@RequestParam int idParcheggio, @RequestParam int costoKw) {
+    public ResponseEntity<String> aggiornaCostoKw(@RequestParam int idParcheggio, @RequestParam int costoKw) {
+
+        /*FIXME: verificare che l'ID del parcheggio esista*/
         parcheggioRepositoryService.updateCostoKwById(idParcheggio, costoKw);
-        return "Costo di ricarica aggiornato con successo !";
+        return ResponseEntity
+                .ok("Costo di ricarica aggiornato con successo !");
     }
 
 }

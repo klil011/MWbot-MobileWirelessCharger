@@ -46,10 +46,11 @@ public class PrenotazioneController {
                     .status(HttpStatus.NOT_ACCEPTABLE)
                     .body("nessun posto libero dispnibile per essere prenotato");
         }
+
         prenotazioneService.gestisciPrenotazione(prenotazione);
 
-        //FIXME: in realtà è completata la prenotazione se poi effettimente non entra in conflitto con un altra prenotazione
-        return ResponseEntity.ok("Prenotazione effettuata");
+        return ResponseEntity
+                .ok("Prenotazione effettuata");
 
     }
 
@@ -57,19 +58,25 @@ public class PrenotazioneController {
     public ResponseEntity<Void> deletePrenotazione(@PathVariable Long id) {
         boolean eliminato = prenotazioneRepositoryService.deletePrenotazioneById(id);
         if(eliminato) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity
+                    .noContent()
+                    .build();
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .build();
     }
 
     @GetMapping("/prenotazioni/{id}")
-    public List<Prenotazione> getAllPrenotazioniByUtente(@PathVariable Long id) {
-        return prenotazioneRepositoryService.findPrenotazioniByUtente(id);
+    public ResponseEntity<List<Prenotazione>> getAllPrenotazioniByUtente(@PathVariable Long id) {
+        return ResponseEntity
+                .ok(prenotazioneRepositoryService.findPrenotazioniByUtente(id));
     }
 
     @GetMapping("/prenotazioni")
-    public Iterable<Prenotazione> getAllPrenotazioni() {
-        return prenotazioneRepositoryService.getAllPrenotazioni();
+    public ResponseEntity<Iterable<Prenotazione>> getAllPrenotazioni() {
+        return ResponseEntity
+                .ok(prenotazioneRepositoryService.getAllPrenotazioni());
     }
 
 }
