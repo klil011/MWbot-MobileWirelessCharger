@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface PrenotazioneRepository extends CrudRepository<Prenotazione, Long> {
 
-    @Query("SELECT * FROM prenotazioni WHERE id_utente = :id")
+    @Query("SELECT * FROM prenotazione WHERE id_utente = :id")
     List<Prenotazione> findPrenotazioniByUtente(Long id);
 
 }

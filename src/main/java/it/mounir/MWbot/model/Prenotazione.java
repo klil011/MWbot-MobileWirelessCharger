@@ -2,6 +2,7 @@ package it.mounir.MWbot.model;
 
 import it.mounir.MWbot.DTO.Richiesta;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -23,6 +24,7 @@ public class Prenotazione {
     @Column("orario_fine")
     private LocalDateTime orarioFine;
 
+    @Transient
     private Richiesta richiesta;
 
     public int getIdPrenotazione() {
