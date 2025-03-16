@@ -5,10 +5,13 @@ import it.mounir.MWbot.services.ParcheggioService;
 import it.mounir.MWbot.services.PrenotazioneRepositoryService;
 import it.mounir.MWbot.services.PrenotazioneService;
 import it.mounir.MWbot.services.UtenteService;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -47,10 +50,17 @@ public class PrenotazioneController {
                     .body("nessun posto libero dispnibile per essere prenotato");
         }
 
-        prenotazioneService.gestisciPrenotazione(prenotazione);
+        Prenotazione prenotazioneSalvata = prenotazioneService.gestisciPrenotazione(prenotazione);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(prenotazioneSalvata.getIdPrenotazione())
+                .toUri();
 
         return ResponseEntity
-                .ok("Prenotazione effettuata");
+                .created(location)
+                .body("Prenotazione effettuata");
 
     }
 

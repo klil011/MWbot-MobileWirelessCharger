@@ -24,15 +24,16 @@ public class SostaService {
         this.sostaRepositoryService = sostaRepositoryService;
     }
 
-    public void richiestaSosta(RichiestaSosta richiestaSosta) {
+    public Sosta richiestaSosta(RichiestaSosta richiestaSosta) {
         String postoLibero = parcheggioService.getPrimoPostoLibero();
         richiestaSosta.setTipoServizio(TipoServizio.SOSTA);
 
         Sosta sosta = creaOggettoSosta(richiestaSosta);
+        Sosta sostaSalvata;
 
         if (postoLibero != null) {
             sosta.setStato(StatoSosta.PARKING.ordinal());
-            Sosta sostaSalvata = this.salvaSosta(sosta);
+            sostaSalvata = this.salvaSosta(sosta);
             richiestaSosta.setIdRichiesta(sostaSalvata.getIdSosta());
 
             parcheggioService.occupaPosto(postoLibero, richiestaSosta);
@@ -41,11 +42,13 @@ public class SostaService {
 
         } else {
             sosta.setStato(StatoSosta.WAITING.ordinal());
-            Sosta sostaSalvata = this.salvaSosta(sosta);
+            sostaSalvata = this.salvaSosta(sosta);
             richiestaSosta.setIdRichiesta(sostaSalvata.getIdSosta());
 
             codaSostaService.aggiungiInCoda(richiestaSosta);
         }
+
+        return sostaSalvata;
     }
 
     private Sosta creaOggettoSosta(RichiestaSosta richiestaSosta) {

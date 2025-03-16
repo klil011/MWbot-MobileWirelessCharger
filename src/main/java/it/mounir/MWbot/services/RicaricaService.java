@@ -23,18 +23,19 @@ public class RicaricaService {
         this.ricaricaRepositoryService = ricaricaRepositoryService;
     }
 
-    public void richiestaRicarica(RichiestaRicarica richiestaRicarica) {
+    public Ricarica richiestaRicarica(RichiestaRicarica richiestaRicarica) {
         /*stazione di ricarica*/
 
         String stazioneLibera  = parcheggioService.getPrimoPostoLibero();
         richiestaRicarica.setTipoServizio(TipoServizio.RICARICA);
 
         Ricarica ricarica = this.creaOggettoRicarica(richiestaRicarica);
+        Ricarica ricaricaSalvata;
 
         if (stazioneLibera != null) {
 
             ricarica.setStato(StatoRicarica.CHARGING.ordinal());
-            Ricarica ricaricaSalvata = this.salvaRichiestaRicarica(ricarica);
+            ricaricaSalvata = this.salvaRichiestaRicarica(ricarica);
             richiestaRicarica.setIdRichiesta(ricaricaSalvata.getIdRicarica());
 
             parcheggioService.occupaPosto(stazioneLibera, richiestaRicarica);
@@ -42,15 +43,14 @@ public class RicaricaService {
             System.out.println("Veicolo " + richiestaRicarica.getVeicoloId() + " ha occupato la stazione di ricarica " + stazioneLibera + ".");
         } else {
 
-            /*FIXME: per le richieste di ricarica con prenotazione devo verificare anche che ci possa essere un
-             *  arco temporale libero per inserire la prenotazione e non bassarmi semplicemente se a stazione è libera o occupata*/
-
             ricarica.setStato(StatoRicarica.WAITING.ordinal()); /* perchè viene messo in coda di attesa */
-            Ricarica ricaricaSalvata = this.salvaRichiestaRicarica(ricarica);
+            ricaricaSalvata = this.salvaRichiestaRicarica(ricarica);
             richiestaRicarica.setIdRichiesta(ricaricaSalvata.getIdRicarica());
 
             codaRicaricaService.aggiungiInCoda(richiestaRicarica);
         }
+
+        return ricaricaSalvata; /*TODO: creare l'URI con l'id della nuova ricarica*/
     }
 
     private Ricarica creaOggettoRicarica(RichiestaRicarica richiestaRicarica) {

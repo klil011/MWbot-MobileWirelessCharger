@@ -26,7 +26,7 @@ public class PrenotazioneService {
         this.prenotazioneRepositoryService = prenotazioneRepositoryService;
     }
 
-    public void gestisciPrenotazione (Prenotazione prenotazione) {
+    public Prenotazione gestisciPrenotazione (Prenotazione prenotazione) {
 
         Richiesta richiesta = prenotazione.getRichiesta();
         
@@ -45,6 +45,8 @@ public class PrenotazioneService {
         } else {
             throw new IllegalArgumentException("Tipo di richiesta non supportato");
         }
+
+        return prenotazioneSalvata;
 
     }
 
