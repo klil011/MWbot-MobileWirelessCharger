@@ -67,6 +67,7 @@ public class ParcheggioService {
         return false;
     }
 
+
     private void informaMwbot(Richiesta richiesta, String postoId) {
         String topic = "Mwbot/Posto/" + postoId;
 
@@ -165,7 +166,7 @@ public class ParcheggioService {
             return false;
         }
 
-        for (List<OccupazionePosto> occupazioni : tempoPostiOccupati.values()) {
+        for(List<OccupazionePosto> occupazioni : tempoPostiOccupati.values()) {
             for (int i = 0; i < occupazioni.size(); i++) {
                 OccupazionePosto occupazione = occupazioni.get(i);
 

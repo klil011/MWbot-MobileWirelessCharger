@@ -1,5 +1,8 @@
 package it.mounir.MWbot.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import it.mounir.MWbot.model.Prenotazione;
 import it.mounir.MWbot.services.ParcheggioService;
 import it.mounir.MWbot.services.PrenotazioneRepositoryService;
@@ -15,6 +18,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@Tag(name = "Prenotazioni API", description = "Gestione delle prenotazioni nel parcheggio")
 public class PrenotazioneController {
 
     private final PrenotazioneService prenotazioneService;
@@ -30,6 +34,15 @@ public class PrenotazioneController {
     }
 
     @PostMapping("/prenotazione")
+    @Operation(
+            summary = "Crea una nuova prenotazione",
+            description = "Permette agli utenti premium di prenotare un posto nel parcheggio",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Prenotazione creata"),
+                    @ApiResponse(responseCode = "403", description = "L'utente non è premium"),
+                    @ApiResponse(responseCode = "406", description = "Nessun posto disponibile")
+            }
+    )
     public ResponseEntity<String> createPrenotazione(@RequestBody Prenotazione prenotazione) {
 
         /*
@@ -65,6 +78,14 @@ public class PrenotazioneController {
     }
 
     @DeleteMapping("/prenotazione/{id}")
+    @Operation(
+            summary = "Elimina una prenotazione",
+            description = "Permette di eliminare una prenotazione esistente",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Prenotazione eliminata con successo"),
+                    @ApiResponse(responseCode = "404", description = "Prenotazione non trovata")
+            }
+    )
     public ResponseEntity<Void> deletePrenotazione(@PathVariable Long id) {
         boolean eliminato = prenotazioneRepositoryService.deletePrenotazioneById(id);
         if(eliminato) {
@@ -78,12 +99,26 @@ public class PrenotazioneController {
     }
 
     @GetMapping("/prenotazioni/{id}")
+    @Operation(
+            summary = "Recupera le prenotazioni di un utente",
+            description = "Restituisce l'elenco delle prenotazioni effettuate da un utente",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Elenco delle prenotazioni restituito con successo")
+            }
+    )
     public ResponseEntity<List<Prenotazione>> getAllPrenotazioniByUtente(@PathVariable Long id) {
         return ResponseEntity
                 .ok(prenotazioneRepositoryService.findPrenotazioniByUtente(id));
     }
 
     @GetMapping("/prenotazioni")
+    @Operation(
+            summary = "Recupera tutte le prenotazioni",
+            description = "Restituisce l'elenco completo delle prenotazioni",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Elenco delle prenotazioni restituito con successo")
+            }
+    )
     public ResponseEntity<Iterable<Prenotazione>> getAllPrenotazioni() {
         return ResponseEntity
                 .ok(prenotazioneRepositoryService.getAllPrenotazioni());
