@@ -31,6 +31,7 @@ public class SostaService {
         Sosta sosta = creaOggettoSosta(richiestaSosta);
         Sosta sostaSalvata;
 
+        /* se ci sono parcheggi liberi viene riservato il primo posto libero per effettuare il servizio di sosta */
         if (postoLibero != null) {
             sosta.setStato(StatoSosta.PARKING.ordinal());
             sostaSalvata = this.salvaSosta(sosta);
@@ -40,6 +41,7 @@ public class SostaService {
 
             System.out.println("Veicolo " + richiestaSosta.getVeicoloId() + " ha occupato il posto " + postoLibero + ".");
 
+        /* se i parcheggi sono tutti occupati viene messa la richista del servizio di sosta in coda FIFO */
         } else {
             sosta.setStato(StatoSosta.WAITING.ordinal());
             sostaSalvata = this.salvaSosta(sosta);

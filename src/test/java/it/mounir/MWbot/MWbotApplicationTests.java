@@ -50,6 +50,8 @@ class MWbotApplicationTests {
 		this.monitor(4);
 	}
 
+	/* TODO: effettuare i test che verifichino gli ID restituiti negli header delle richieste POST */
+
 	@Test
 	@DirtiesContext
 	public void testEffettuaRicarica() throws Exception {

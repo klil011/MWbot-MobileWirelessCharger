@@ -25,6 +25,9 @@ import java.util.*;
 public class ParcheggioService {
 
     private final Set<String> postiLiberi;
+
+    /*  Hash map di liste, ogni lista rappresenta richieste di ricarica/sosta e prenotazioni,
+    "tempoPostiOccupati" perchè al suo interno vengono salvati i timestamp del tempo di occupazione del singolo posto */
     private final Map<String, List<OccupazionePosto>> tempoPostiOccupati;
     private final int maxPosti = 5;
 
@@ -43,11 +46,13 @@ public class ParcheggioService {
         this.postiLiberi = new HashSet<>();
         this.tempoPostiOccupati = new HashMap<>();
 
+        /*  Inizializzazione delle strutture dati  */
         for (int i = 1; i <= maxPosti; i++) {
             postiLiberi.add(String.valueOf(i));
             tempoPostiOccupati.put(String.valueOf(i), new ArrayList<>());
         }
     }
+
 
     public boolean occupaPosto(String postoId, Richiesta richiesta) {
         if (postiLiberi.remove(postoId)) {
@@ -68,6 +73,7 @@ public class ParcheggioService {
     }
 
 
+    /* MQTT publisher per informare il bot del servizo che dovrà compiere */
     private void informaMwbot(Richiesta richiesta, String postoId) {
         String topic = "Mwbot/Posto/" + postoId;
 
@@ -90,6 +96,11 @@ public class ParcheggioService {
                 richiesta.getTipoServizio(), System.currentTimeMillis(), richiesta.getInizio(), richiesta.getFine());
     }
 
+    /* Aggiorna lo stato del servizio all'interna del DB, quando un veicolo passa dalla coda di attesa all'erogazione
+    * del servizo di ricarica lo stato passa da WAITING ---> CHARGING
+    *
+    * Stessa cosa per il servizio di sosta, quando passa dalla coda di attesa all'erogazione del servizio
+    * WAITING ---> PARKING*/
     private void aggiornaStato(Richiesta richiesta) {
         /*  Aggiornamento dello stato della ricarica da WAITING a CHARGING  */
         if(richiesta.getTipoServizio().equals(TipoServizio.RICARICA)){
@@ -138,7 +149,9 @@ public class ParcheggioService {
 
                 /*  Da qui richiamo il servizio che gestice il calcolo dell'importo
                 da pagare [PagamentoService.calcolaImporto(tempo, servizio, idUtente)]
-                che sarà riferito solo alla sosta, mentre per il costo di ricarica va gestito nel servizio MwbotService */
+                che sarà riferito solo alla sosta, mentre per il costo di ricarica va gestito nel servizio MwbotService
+
+                Al costo di ricarica va aggiunto il costo della sosta all'interno del parcheggio  */
 
                 pagamentoService.calcolaImporto((int) tempoTrascorso, TipoServizio.SOSTA, occupazionePosto.getIdUtente());
 
@@ -150,6 +163,7 @@ public class ParcheggioService {
                 else {
                     /*  Quindi se è ricarica salverò il tempo di sosta  */
                     ricaricaRepositoryService.updateTempoById((long)occupazionePosto.getIdRichiesta(), tempoTrascorso);
+                /* perché il servizio di ricarica è composto anche dalla sosta */
                 }
             } else {
                 System.out.println("Posto " + postoId + " non era occupato.");

@@ -12,6 +12,8 @@ import java.util.Queue;
 public class CodaService {
 
     private final ParcheggioService parcheggioService;
+
+    /*  una sola coda che gestisce sia le richieste di ricarica che di sosta   */
     private final Queue<Richiesta> codaRichieste = new LinkedList<>();
 
     public CodaService(ParcheggioService parcheggioService) {
@@ -24,10 +26,11 @@ public class CodaService {
         System.out.println("Veicolo " + richiesta.getVeicoloId() + " è stato messo in coda.");
     }
 
-    public Richiesta rimuoviDallaCoda() {
+    private Richiesta rimuoviDallaCoda() {
         return codaRichieste.poll();
     }
 
+    /* si occupa di spostare gli elementi in coda secondo una logica FIFO dalla coda di attesa al parcheggio */
     public void gestisciCoda (String postoLiberoId) {
         if(this.codaNonVuota()) {
 

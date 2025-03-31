@@ -68,7 +68,7 @@ public class MwbotService {
                         ricaricaRepositoryService.updateStatoById((long) richiestaCorrente.getIdRichiesta(), StatoRicarica.COMPLETED.ordinal());
                         pagamentoService.calcolaImporto((int) tempoDiRicarica/1000, TipoServizio.RICARICA, richiestaCorrente.getIdUtente());
 
-                        /*  Qua si fa partire il service che si occupa di gestire il pagamento per la ricarica   */
+                        /* notificazione all'utente per la terminazione della ricarica (se richiesto) */
                         if (richiestaCorrente.getRiceviMessaggio()) {
                             String topic = "Parcheggio/Messaggio/Posto/" + postoId;
                             mqttPublisher.publish(topic, "Notifica: ricarica del veicolo con targa "

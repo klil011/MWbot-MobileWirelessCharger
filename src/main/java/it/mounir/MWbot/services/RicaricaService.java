@@ -24,7 +24,6 @@ public class RicaricaService {
     }
 
     public Ricarica richiestaRicarica(RichiestaRicarica richiestaRicarica) {
-        /*stazione di ricarica*/
 
         String stazioneLibera  = parcheggioService.getPrimoPostoLibero();
         richiestaRicarica.setTipoServizio(TipoServizio.RICARICA);
@@ -32,6 +31,7 @@ public class RicaricaService {
         Ricarica ricarica = this.creaOggettoRicarica(richiestaRicarica);
         Ricarica ricaricaSalvata;
 
+        /* se ci sono parcheggi liberi viene riservato il primo posto libero per effettuare il servizio di ricarica */
         if (stazioneLibera != null) {
 
             ricarica.setStato(StatoRicarica.CHARGING.ordinal());
@@ -41,6 +41,8 @@ public class RicaricaService {
             parcheggioService.occupaPosto(stazioneLibera, richiestaRicarica);
 
             System.out.println("Veicolo " + richiestaRicarica.getVeicoloId() + " ha occupato la stazione di ricarica " + stazioneLibera + ".");
+
+            /* se i parcheggi sono tutti occupati viene messa la richista del servizio di ricarica in coda FIFO */
         } else {
 
             ricarica.setStato(StatoRicarica.WAITING.ordinal()); /* perchè viene messo in coda di attesa */
@@ -50,7 +52,7 @@ public class RicaricaService {
             codaRicaricaService.aggiungiInCoda(richiestaRicarica);
         }
 
-        return ricaricaSalvata; /*TODO: creare l'URI con l'id della nuova ricarica*/
+        return ricaricaSalvata;
     }
 
     private Ricarica creaOggettoRicarica(RichiestaRicarica richiestaRicarica) {
