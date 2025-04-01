@@ -63,7 +63,11 @@ public class ParcheggioService {
 
             aggiornaStato(richiesta);
 
-            informaMwbot(richiesta, postoId);
+
+            /* TODO: deve informare il bot solo quano si tratta di un servizio di ricarica */
+            if (richiesta.isRicarica(richiesta)) {
+                informaMwbot(richiesta, postoId);
+            }
 
             return true;
         }
@@ -85,7 +89,7 @@ public class ParcheggioService {
         try {
             String jsonPayload = objectMapper.writeValueAsString(richiesta);
             mqttPublisher.publish(topic, jsonPayload);
-            System.out.println("Payload inviato: " + jsonPayload);
+            //System.out.println("Payload inviato: " + jsonPayload);
         } catch (Exception e) {
             e.printStackTrace();
         }
