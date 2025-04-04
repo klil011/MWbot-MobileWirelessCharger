@@ -173,7 +173,7 @@ public class ParcheggioService {
                 System.out.println("Posto " + postoId + " non era occupato.");
             }
 
-            System.out.println("Posto " + postoId + " è ora libero.");
+            System.out.println("\n[LEAVING] Posto " + postoId + " è ora libero.");
         } else {
             System.out.println("Operazione non possibile, errore indice parcheggio");
         }

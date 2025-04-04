@@ -40,7 +40,7 @@ public class RicaricaService {
 
             parcheggioService.occupaPosto(stazioneLibera, richiestaRicarica);
 
-            System.out.println("Veicolo " + richiestaRicarica.getVeicoloId() + " ha occupato la stazione di ricarica " + stazioneLibera + ".");
+            System.out.println("[CHARGING] Veicolo " + richiestaRicarica.getVeicoloId() + " ha occupato la stazione di ricarica " + stazioneLibera + ". \n");
 
             /* se i parcheggi sono tutti occupati viene messa la richista del servizio di ricarica in coda FIFO */
         } else {
@@ -48,6 +48,8 @@ public class RicaricaService {
             ricarica.setStato(StatoRicarica.WAITING.ordinal()); /* perchè viene messo in coda di attesa */
             ricaricaSalvata = this.salvaRichiestaRicarica(ricarica);
             richiestaRicarica.setIdRichiesta(ricaricaSalvata.getIdRicarica());
+
+            System.out.println("[WAITING] Veicolo " + richiestaRicarica.getVeicoloId() + " e' in coda di attesa. \n");
 
             codaRicaricaService.aggiungiInCoda(richiestaRicarica);
         }
@@ -80,7 +82,7 @@ public class RicaricaService {
             return ricaricaSalvata;
 
         }catch(RuntimeException e){
-            System.err.println("Errore durante l'interazione con il DB: " + e.getMessage());
+            System.err.println("[ERROR] Errore durante l'interazione con il DB: " + e.getMessage());
             throw new RuntimeException("Non è stato possibile completare la richiesta di ricarica", e);
         }
     }

@@ -39,7 +39,7 @@ public class SostaService {
 
             parcheggioService.occupaPosto(postoLibero, richiestaSosta);
 
-            System.out.println("Veicolo " + richiestaSosta.getVeicoloId() + " ha occupato il posto " + postoLibero + ".");
+            System.out.println("[PARKING] Veicolo " + richiestaSosta.getVeicoloId() + " ha occupato il posto " + postoLibero + ".");
 
         /* se i parcheggi sono tutti occupati viene messa la richista del servizio di sosta in coda FIFO */
         } else {

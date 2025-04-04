@@ -47,7 +47,7 @@ public class MwbotService {
         aggiungiRicaricaCoda(ricarica);
 
         if (isRicaricaInCorso) {
-            System.out.println("Ricarica già in corso. Veicolo aggiunto alla coda.");
+            System.out.println("[WAITING MWbot] Ricarica già in corso. Veicolo aggiunto alla coda.");
             return;
         }
 
@@ -71,7 +71,7 @@ public class MwbotService {
                         /* notificazione all'utente per la terminazione della ricarica (se richiesto) */
                         if (richiestaCorrente.getRiceviMessaggio()) {
                             String topic = "Parcheggio/Messaggio/Posto/" + postoId;
-                            mqttPublisher.publish(topic, "Notifica: ricarica del veicolo con targa "
+                            mqttPublisher.publish(topic, "\n[INFO] Notifica: ricarica del veicolo con targa "
                                     + richiestaCorrente.getVeicoloId() + " terminata");
                         }
                     }
